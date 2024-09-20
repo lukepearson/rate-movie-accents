@@ -1,9 +1,9 @@
-import { getKey } from '@/utilities/Sanitisation';
+import { sanitise } from '@/utilities/Sanitisation';
 import { isKeyOfRatings } from '@/utilities/TypePredicates';
 import z from 'zod';
 
 
-const minRating = 0.5;
+const minRating = 1;
 const maxRating = 5;
 
 const RatingSchema = z.object({
@@ -38,12 +38,16 @@ function createRating(actor: string, film: string, nativeAccent: string, attempt
     rating,
     votes: 1,
     ratings: ratings,
-    id: getKey(actor, film),
+    id: createRatingId(actor, film),
     created_at: new Date().toISOString(),
   };
   if (isKeyOfRatings(rating)) newRating.ratings[rating] = 1;
   return newRating;
 }
 
-export { RatingSchema, ratingIdSchema, minRating, maxRating, createRating };
+const createRatingId = (actor: string, film: string): RatingId => {
+  return ratingIdSchema.parse(`rating:${sanitise(actor)}:${sanitise(film)}`);
+};
+
+export { RatingSchema, ratingIdSchema, minRating, maxRating, createRating, createRatingId };
 export type { Rating, RatingId };

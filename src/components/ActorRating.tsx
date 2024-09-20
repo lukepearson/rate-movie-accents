@@ -1,6 +1,6 @@
 'use client';
 
-import { submitChatMessage, submitExistingRating } from "@/app/actions";
+import { submitChatMessage, voteOnExistingRating } from "@/app/actions";
 import { Rating } from "@/app/models/Rating";
 import { Chat } from "@/app/models/Chat";
 import { RatingRenderer } from "@/components/RatingRenderer";
@@ -26,13 +26,14 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
     <div>
       <RatingRenderer
         onChange={(newRating: Rating) => {
-          submitExistingRating(rating.id, newRating.rating);
+          voteOnExistingRating(rating.id, newRating.rating);
         }}
         rating={rating}
+        isLink={false}
       />
 
       <details className="collapse bg-gray-900 border-2 border-indigo-500">
-        <summary className="collapse-title text-xl font-medium hover:bg-gray-800 pe-0">Comments</summary>
+        <summary className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Comments</summary>
         <div className="collapse-content">
           {chat.map((message) => (
             <ChatItem key={message.created_at} chat={message} />

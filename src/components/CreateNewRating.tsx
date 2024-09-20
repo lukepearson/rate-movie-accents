@@ -5,6 +5,8 @@ import { FC, useEffect, useState } from "react";
 import UpArrow from '@heroicons/react/24/outline/ArrowUpCircleIcon';
 import WarningIcon from '@heroicons/react/24/outline/ExclamationCircleIcon';
 import { RatingHearts } from "./RatingHearts";
+import useLocalStorageState from "use-local-storage-state";
+import { createRatingId } from "@/app/models/Rating";
 
 interface CreateNewRatingProps {
   actor: string;
@@ -17,6 +19,9 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actor, film }) => {
   const [nativeAccent, setNativeAccent] = useState('');
   const [attemptedAccent, setAttemptedAccent] = useState('');
   const [accents, setAccents] = useState([]);
+  const [votedIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
+    defaultValue: [],
+  });
 
   useEffect(() => {
     fetch('/accents.json')
@@ -42,7 +47,11 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actor, film }) => {
 
       <h2 className="text-center mb-4 text-xl">Submit a new rating:</h2>
 
-      <form className="flex flex-col items-center gap-4 p-4" action={submitNewRating}>
+      <form className="flex flex-col items-center gap-4 p-4" action={(e) => {
+        const newVoteId = createRatingId(actor, film);
+        setVoteIds([...votedIds, newVoteId]);
+        submitNewRating(e)
+      }}>
         <input type="hidden" name="actor" value={actor} />
         <input type="hidden" name="film" value={film} />
         <input type="hidden" name="rating" value={rating} />

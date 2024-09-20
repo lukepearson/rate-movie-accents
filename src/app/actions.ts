@@ -2,10 +2,8 @@
 
 import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
-import { createRating, Rating, ratingIdSchema, RatingSchema } from "./models/Rating";
+import { createRating, createRatingId, Rating, ratingIdSchema, RatingSchema } from "./models/Rating";
 import { toChatId, ChatSchema } from "./models/Chat";
-import { getKey } from "@/utilities/Sanitisation";
-import { updateRollingAverage } from "@/utilities/Average";
 import { urls } from "@/utilities/Urls";
 import { getRatingById, updateRating } from "./store/kv";
 
@@ -15,7 +13,7 @@ export async function submitNewRating(formData: FormData) {
   const film = String(formData.get("film"));
   const nativeAccent = String(formData.get("nativeAccent"));
   const attemptedAccent = String(formData.get("attemptedAccent"));
-  const rating = Math.max(1, Math.min(5, parseInt(String(formData.get("rating")))));
+  const rating = Math.max(0.5, Math.min(5, parseInt(String(formData.get("rating")))));
   console.log('New rating for', {
     actor, film, rating, nativeAccent, attemptedAccent,
   });
@@ -34,7 +32,7 @@ export async function submitNewRating(formData: FormData) {
 }
 
 export async function searchByActorAndFilm(actor: string, film: string): Promise<Rating | null> {
-  const key = getKey(actor, film);
+  const key = createRatingId(actor, film);
   console.log('Searching for', key);
   const rating = await kv.hgetall(key);
   if (!rating) {
@@ -45,7 +43,7 @@ export async function searchByActorAndFilm(actor: string, film: string): Promise
   return RatingSchema.safeParse(rating).data ?? null;
 }
 
-export async function submitExistingRating(ratingId: string, newRating: number) {
+export async function voteOnExistingRating(ratingId: string, newRating: number) {
   const ratingIdResult = ratingIdSchema.safeParse(ratingId);
   if (!ratingIdResult.success) {
     return ratingIdResult.error;

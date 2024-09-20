@@ -14,7 +14,7 @@ const ChatItem: FC<ChatItemProps> = ({ chat }) => {
         {chat.author}
         <time className="text-xs opacity-50 ps-2">{timeDelta}</time>
       </div>
-      <div className="chat-bubble">{chat.message}</div>
+      <div className="chat-bubble text-left">{chat.message}</div>
     </div>
   );
 };

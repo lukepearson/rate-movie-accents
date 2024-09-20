@@ -2,7 +2,7 @@
 
 import { Rating } from "@/app/models/Rating";
 import { RatingRenderer } from "./RatingRenderer";
-import { submitExistingRating } from "@/app/actions";
+import { voteOnExistingRating } from "@/app/actions";
 import { FC } from "react";
 
 interface RatingsListProps {
@@ -19,9 +19,10 @@ const RatingsList: FC<RatingsListProps> = ({ ratings }) => {
         <RatingRenderer
           key={rating.id}
           onChange={(newRating) => {
-            submitExistingRating(rating.id, newRating.rating)
+            voteOnExistingRating(rating.id, newRating.rating)
           }}
           rating={rating}
+          isLink
         />
       ))}
     </div>

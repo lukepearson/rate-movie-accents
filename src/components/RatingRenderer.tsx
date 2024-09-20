@@ -7,24 +7,23 @@ import useLocalStorageState from "use-local-storage-state";
 import { useRouter } from "next/navigation";
 import { urls } from "@/utilities/Urls";
 import BarChart from "./BarChart";
+import clsx from "clsx";
 
 
 interface RatingProps {
   rating: Rating;
   onChange: (rating: Rating) => void;
+  isLink?: boolean;
 }
-const RatingRenderer: FC<RatingProps> = ({ rating, onChange }) => {
+const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink }) => {
   const router = useRouter();
   const [votedIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
   });
   const hasAlreadyVoted = votedIds.includes(rating.id);
 
-  rating.ratings = { 1: 10000, 2: 10, 3: 10, 4: 10, 5: 10 };
-
   const handleChange = (newRating: number) => {
     if (hasAlreadyVoted) return;
-    console.log('newRating', newRating);
     setVoteIds([...votedIds, rating.id]);
     onChange({
       ...rating,
@@ -32,10 +31,12 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange }) => {
     });
   };
 
+  const linkClasses = isLink ? 'cursor-pointer hover:bg-gray-800' : '';
+
   return (
     <div
-      onClick={() => router.push(urls.rating(rating.actor, rating.film))}
-      className="max-w-md mx-auto bg-gray-900 border-4 border-indigo-500 rounded-xl shadow-md overflow-hidden md:max-w-2xl my-4 cursor-pointer hover:bg-gray-800">
+      onClick={() => isLink && router.push(urls.rating(rating.actor, rating.film))}
+      className={clsx('max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-xl shadow-md overflow-hidden md:max-w-2xl my-4', linkClasses)}>
       <div className="grid p-8">
         <div className="mb-3">
           <span className="font-bold text-white">{rating.actor}</span>&nbsp;

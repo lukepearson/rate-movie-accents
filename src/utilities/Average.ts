@@ -1,5 +1,9 @@
 import { maxRating, minRating, Rating, RatingSchema } from "@/app/models/Rating";
 
+const isRatingsKey = (key: number): key is keyof Rating['ratings'] => {
+  return key in RatingSchema.shape.ratings.shape;
+}
+
 function updateRollingAverage(
   rating: Rating,
   newVote: number,
@@ -15,11 +19,17 @@ function updateRollingAverage(
     currentAverage * rating.votes + parsedNewVote
   ) / totalVotes;
 
+  const newRatings = rating.ratings;
+  if (isRatingsKey(newVote)) {
+    newRatings[newVote] += 1;
+  }
+
   return {
     ...rating,
     votes: totalVotes,
     rating: Math.min(Math.max(newAverage, minRating), maxRating),
-  }
+    ratings: newRatings,
+  };
 }
 
 export { updateRollingAverage };

@@ -9,16 +9,13 @@ interface RatingHeartProps {
   onChange: (rating: number) => void;
   onMouseOver: MouseEventHandler<HTMLInputElement>;
   value: number;
-  colour: string;
   name: string;
   isDisabled: boolean;
 }
 
-const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMouseOver, value, colour, name, isDisabled }) => {
-  const firstHalf = value - 1;
+const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMouseOver, value, name, isDisabled }) => {
   const activeRating = hoverRating ?? rating;
-  const isFirstHalfActive = Boolean(activeRating >= firstHalf);
-  const isSecondHalfActive = Boolean(activeRating >= value);
+  const isActive = Boolean(activeRating >= value);
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
@@ -35,17 +32,9 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
         disabled={isDisabled}
         type="radio" name={name} onChange={handleChange}
         onClick={handleClick}
-        onMouseOver={onMouseOver} value={firstHalf} 
-        checked={isFirstHalfActive}
-        className={`${styles} mask-half-1`}
-      />
-      <input 
-        disabled={isDisabled}
-        type="radio" name={name} onChange={handleChange}
-        onClick={handleClick}
         onMouseOver={onMouseOver} value={value} 
-        checked={isSecondHalfActive}
-        className={`${styles} mask-half-2 me-2`}
+        checked={isActive}
+        className={`${styles} mask me-2`}
       />
     </>
   );

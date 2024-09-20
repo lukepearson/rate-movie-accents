@@ -4,7 +4,7 @@ import { Rating } from "./models/Rating";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { RatingRenderer } from "@/components/RatingRenderer";
-import { submitExistingRating } from "./actions";
+import { voteOnExistingRating } from "./actions";
 import { RatingsList } from "@/components/RatingsList";
 
 export const metadata: Metadata = {

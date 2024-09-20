@@ -17,7 +17,7 @@ export default function RootLayout({
       <body>
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
           <header className="flex justify-center items-center w-full h-24 border-b">
-            <h1 className="text-lg sm:text-2xl font-bold mb-2">
+            <h1 className="text-lg text-primary sm:text-2xl font-bold mb-2">
               Rate film accents
             </h1>
           </header>

@@ -22,7 +22,6 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
   if (searchParams?.get("voted") === "true") {
     setVoteIds((ids) => [...voteIds, rating.id]);
   }
-  const chatRef = useRef<HTMLTextAreaElement>(null)
 
   return (
     <div>
@@ -37,7 +36,7 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
         isLoading={isLoading}
       />
 
-      <ChatRenderer chat={chat} rating={rating} submitChatMessage={submitChatMessage} chatRef={chatRef} />
+      <ChatRenderer chat={chat} rating={rating} submitChatMessage={submitChatMessage} />
 
       <nav className="my-8">
         <a href="/">Back to home page</a>

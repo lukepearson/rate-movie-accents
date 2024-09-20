@@ -1,16 +1,19 @@
 'use client';
 
-import { submitExistingRating } from "@/app/actions";
-import { Rating } from "@/app/types";
+import { submitChatMessage, submitExistingRating } from "@/app/actions";
+import { Rating } from "@/app/models/Rating";
+import { Chat } from "@/app/models/Chat";
 import { RatingRenderer } from "@/components/RatingRenderer";
 import { useSearchParams } from "next/navigation";
-import { FC } from "react";
+import { FC, useRef } from "react";
 import useLocalStorageState from "use-local-storage-state";
+import { ChatItem } from "./ChatItem";
 
 interface ActorRatingProps {
   rating: Rating;
+  chat: Array<Chat>;
 }
-const ActorRating: FC<ActorRatingProps> = ({ rating }) => {
+const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
   const searchParams = useSearchParams();
   const [voteIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
@@ -18,6 +21,7 @@ const ActorRating: FC<ActorRatingProps> = ({ rating }) => {
   if (searchParams?.get("voted") === "true") {
     setVoteIds((ids) => [...voteIds, rating.id]);
   }
+  const chatRef = useRef<HTMLTextAreaElement>(null)
   return (
     <div>
       <RatingRenderer
@@ -27,35 +31,24 @@ const ActorRating: FC<ActorRatingProps> = ({ rating }) => {
         rating={rating}
       />
 
-      <details className="collapse bg-base-200">
-        <summary className="collapse-title text-xl font-medium">Comments</summary>
+      <details className="collapse bg-gray-900 border-2 border-indigo-500">
+        <summary className="collapse-title text-xl font-medium hover:bg-gray-800 pe-0">Comments</summary>
         <div className="collapse-content">
-          <div className="chat chat-start">
-              <div className="chat-header">
-                Obi-Wan Kenobi
-                <time className="text-xs opacity-50">2 hours ago</time>
-              </div>
-              <div className="chat-bubble">You were the Chosen One!</div>
-              <div className="chat-footer opacity-50">Seen</div>
-            </div>
-            <div className="chat chat-start">
-              <div className="chat-header">
-                Obi-Wan Kenobi
-                <time className="text-xs opacity-50">2 hours ago</time>
-              </div>
-              <div className="chat-bubble">I loved you.</div>
-              <div className="chat-footer opacity-50">Delivered</div>
-          </div>
+          {chat.map((message) => (
+            <ChatItem key={message.created_at} chat={message} />
+          ))}
         </div>
 
         <h2>Add a comment</h2>
-        <div className="flex flex-col items-center gap-4 p-4">
-          <input className="input input-bordered input-primary w-full max-w-xs placeholder-gray-500" placeholder="Your name" />
-          <textarea className="textarea textarea-primary w-full max-w-xs placeholder-gray-500" placeholder="Your comment" maxLength={120}></textarea>
-          <span className="text-muted">Max 120 characters</span>
-
+        <form action={(formData) => {
+          submitChatMessage(formData)
+          chatRef.current!.value = ""
+        }} className="flex flex-col items-center gap-4 p-4">
+          <input name="author" maxLength={30} className="input input-bordered input-primary w-full max-w-xs placeholder-gray-500" placeholder="Your name" />
+          <textarea ref={chatRef} maxLength={120} name="message" className="textarea textarea-primary w-full max-w-xs placeholder-gray-500" placeholder="Your comment"></textarea>
+          <input hidden name="ratingId" value={rating.id} onChange={() => {}} />
           <button className="btn btn-primary">Post</button>
-        </div>
+        </form>
       </details>
       
 

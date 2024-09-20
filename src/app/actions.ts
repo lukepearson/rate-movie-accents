@@ -2,11 +2,13 @@
 
 import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
-import { Rating, RatingSchema } from "./types";
-import { b64, getKey, sanitise } from "@/utilities/Sanitisation";
+import { createRating, Rating, ratingIdSchema, RatingSchema } from "./models/Rating";
+import { toChatId, ChatSchema } from "./models/Chat";
+import { getKey } from "@/utilities/Sanitisation";
 import { updateRollingAverage } from "@/utilities/Average";
 import { urls } from "@/utilities/Urls";
-import { NextRequest, NextResponse } from "next/server";
+import { getRatingById, updateRating } from "./store/kv";
+
 
 export async function submitNewRating(formData: FormData) {
   const actor = String(formData.get("actor"));
@@ -17,19 +19,9 @@ export async function submitNewRating(formData: FormData) {
   console.log('New rating for', {
     actor, film, rating, nativeAccent, attemptedAccent,
   });
-  if (!actor || !film) {
-    throw new Error("Missing actor or film");
-  }
-  const newRating: Rating = {
-    actor,
-    film,
-    nativeAccent,
-    attemptedAccent,
-    rating,
-    votes: 1,
-    id: getKey(actor, film),
-    created_at: new Date().toISOString(),
-  };
+
+  const newRating = createRating(actor, film, nativeAccent, attemptedAccent, rating);
+  
   await kv.hset(newRating.id, newRating);
   await kv.zadd("items_by_score", {
     score: Number(newRating.rating),
@@ -39,7 +31,6 @@ export async function submitNewRating(formData: FormData) {
   const path = urls.rating(actor, film);
   revalidatePath(path);
   revalidatePath("/");
-  return NextResponse.rewrite(`${path}?voted=true`);
 }
 
 export async function searchByActorAndFilm(actor: string, film: string): Promise<Rating | null> {
@@ -55,30 +46,43 @@ export async function searchByActorAndFilm(actor: string, film: string): Promise
 }
 
 export async function submitExistingRating(ratingId: string, newRating: number) {
-  
-  if (!ratingId || !newRating) {
-    throw new Error(`Missing ratingId (${ratingId}) or newRating (${newRating})`);
+  const ratingIdResult = ratingIdSchema.safeParse(ratingId);
+  if (!ratingIdResult.success) {
+    return ratingIdResult.error;
   }
-
-  const ratingIdSanitised = sanitise(ratingId);
-
-  const existingRating = await kv.hgetall(ratingIdSanitised);
-  if (!existingRating) {
-    throw new Error(`Rating not found for id ${ratingIdSanitised}`);
-  }
-
-  const parseResult = RatingSchema.safeParse(existingRating);
-  if (!parseResult.success) {
-    console.error(parseResult.error)
-    throw new Error("Invalid rating " + JSON.stringify(existingRating));
-  }
-  const parsedRating = parseResult.data;
-  const updatedRating = updateRollingAverage(parsedRating, newRating);
-  
-  await kv.hset(updatedRating.id, updatedRating);
-  await kv.zadd("items_by_score", { score: updatedRating.rating, member: updatedRating.id });
+  const parsedRatingId = ratingIdResult.data;
+  const updatedRating = await updateRating(parsedRatingId, newRating);
 
   const path = urls.rating(updatedRating.actor, updatedRating.film);
   revalidatePath(path);
   revalidatePath("/");
+}
+
+export async function submitChatMessage(formData: FormData) {
+  const author = String(formData.get("author"));
+  const message = String(formData.get("message"));
+  const ratingId = String(formData.get("ratingId"));
+  if (!author || !message || !ratingId) {
+    throw new Error("Missing name or message or ratingId");
+  }
+  const chatMessage = ChatSchema.parse({
+    author,
+    message,
+    created_at: new Date().toISOString(),
+  });
+  
+  const rating = await getRatingById(ratingId);
+
+  console.log('New chat message for', ratingId, chatMessage);
+  await kv.rpush(toChatId(ratingId), chatMessage);
+  const path = urls.rating(rating.actor, rating.film);
+  revalidatePath(path);
+}
+
+export async function getChatMessages(ratingId: string) {
+  if (!ratingId) {
+    throw new Error("Missing ratingId");
+  }
+  const chatMessages = await kv.lrange(toChatId(ratingId), 0, -1);
+  return chatMessages.map((message) => ChatSchema.parse(message));
 }

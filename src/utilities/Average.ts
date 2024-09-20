@@ -1,4 +1,4 @@
-import { maxRating, minRating, Rating, RatingSchema } from "@/app/types";
+import { maxRating, minRating, Rating, RatingSchema } from "@/app/models/Rating";
 
 function updateRollingAverage(
   rating: Rating,

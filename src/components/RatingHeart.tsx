@@ -1,5 +1,6 @@
 'use client';
 
+import clsx from "clsx";
 import { ChangeEventHandler, FC, MouseEventHandler } from "react";
 
 interface RatingHeartProps {
@@ -26,7 +27,8 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
   }
-  const styles = `mask mask-heart hover:bg-${colour}-600 bg-${colour}-400 ${isDisabled ? "cursor-not-allowed" : "cursor-pointer"}`;
+  const cursorStyle = isDisabled ? "cursor-not-allowed" : "cursor-pointer";
+  const styles = clsx(`mask mask-heart bg-primary`, cursorStyle);
   return (
     <>
       <input 

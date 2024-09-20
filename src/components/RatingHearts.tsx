@@ -17,6 +17,7 @@ const RatingHearts: FC<RatingHeartsProps> = ({ rating, hasAlreadyVoted = false, 
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const onChange = (newValue: number) => {
     if (hasAlreadyVoted) return;
+    console.log(newValue);
     onRatingChange(newValue / 2);
   };
   const onMouseOver: MouseEventHandler<HTMLInputElement> = (event) => {
@@ -31,12 +32,12 @@ const RatingHearts: FC<RatingHeartsProps> = ({ rating, hasAlreadyVoted = false, 
     hoverRating,
     onMouseOver,
     onChange,
-    colour: hasAlreadyVoted ? "green" : "gray",
+    colour: hasAlreadyVoted ? "green" : "red",
     isDisabled: hasAlreadyVoted,
   }
 
   return (
-    <div className="rating rating-half rating-lg flex justify-center" onMouseOut={() => setHoverRating(null)}>
+    <div className="rating rating-half rating-lg flex justify-center" onMouseLeave={() => setHoverRating(null)}>
       <RatingHeart {...commonProps} value={2} />
       <RatingHeart {...commonProps} value={4} />
       <RatingHeart {...commonProps} value={6} />

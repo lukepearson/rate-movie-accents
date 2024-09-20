@@ -2,9 +2,7 @@ import { Suspense } from "react";
 import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import Loading from "./loading";
-import Link from "next/link";
-import Head from "next/head";
-import Plus from '@heroicons/react/16/solid/PlusIcon';
+
 
 export default function RootLayout({
   children,
@@ -26,8 +24,7 @@ export default function RootLayout({
 
           <div className="breadcrumbs text-sm">
             <ul>
-              <li><a>Home</a></li>
-              <li><a>Ratings</a></li>
+              <li><a href='/'>Home</a></li>
             </ul>
           </div>
 

@@ -1,24 +1,12 @@
 "use client";
 
-import { Rating } from "./types";
-import { notFound, useRouter } from "next/navigation";
-import { RatingRenderer } from "@/components/RatingRenderer";
+import { Rating } from "./models/Rating";
+import { useRouter } from "next/navigation";
 import { b64 } from "@/utilities/Sanitisation";
-import { submitExistingRating } from "./actions";
 
 
-export default function RatingsForm({ ratings }: { ratings: Rating[] }) {
+export default function RatingsForm() {
   const router = useRouter();
-
-  if (!ratings) return notFound();
-
-  const sortedRatings = ratings.filter(Boolean).sort((a, b) => {
-    if (!a) return 1;
-    if (!b) return -1;
-    if (Number(a.rating) > Number(b.rating)) return -1;
-    if (Number(a.rating) < Number(b.rating)) return 1;
-    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-  });
 
   const actor: keyof Rating = 'actor';
   const film: keyof Rating = 'film';
@@ -63,22 +51,6 @@ export default function RatingsForm({ ratings }: { ratings: Rating[] }) {
           </button>
         </form>
       </div>
-
-      <h3 className="my-5">Highest rated:</h3>
-
-      {sortedRatings.length > 0 && (
-        <div className="items-center justify-center flex flex-col">
-          {sortedRatings.map((rating: Rating, index: number) => (
-            <RatingRenderer
-              key={rating.id}
-              onChange={(newRating) => {
-                submitExistingRating(rating.id, newRating.rating)
-              }}
-              rating={rating}
-            />
-          ))}
-        </div>
-      )}
     </>
   );
 }

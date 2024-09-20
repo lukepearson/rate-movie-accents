@@ -1,4 +1,4 @@
-import { searchByActorAndFilm } from "@/app/actions";
+import { getChatMessages, searchByActorAndFilm } from "@/app/actions";
 import { CreateNewRating } from "@/components/CreateNewRating";
 import { unB64 } from "@/utilities/Sanitisation";
 import { ActorRating } from "../../../../components/ActorRating";
@@ -21,5 +21,7 @@ export default async function Page({ params }: ActorFilmProps) {
     return <CreateNewRating actor={actor} film={film} />
   }
 
-  return <ActorRating rating={rating} />
+  const chat = await getChatMessages(rating.id);
+
+  return <ActorRating rating={rating} chat={chat} />
 }

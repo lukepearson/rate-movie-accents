@@ -6,6 +6,7 @@ import { createRating, createRatingId, Rating, ratingIdSchema, RatingSchema } fr
 import { toChatId, ChatSchema } from "./models/Chat";
 import { urls } from "@/utilities/Urls";
 import { getRatingById, updateRating } from "./store/kv";
+import { searchActors, searchFilms, searchFilmsByActorId } from "./store/tmdb";
 
 
 export async function submitNewRating(formData: FormData) {
@@ -30,6 +31,28 @@ export async function submitNewRating(formData: FormData) {
   revalidatePath(path);
   revalidatePath("/");
 }
+
+export async function searchForFilms(query: string) {
+  console.log('Searching for films', query);
+  const films = await searchFilms(query);
+  console.log(films.length, 'films found for', query);
+  return films;
+}
+
+export async function searchForActors(query: string) {
+  console.log('Searching for actors', query);
+  const actors = await searchActors(query);
+  console.log(actors.length, 'actors found for', query);
+  return actors;
+}
+
+export async function searchForFilmsByActor(actorId: number) {
+  console.log('Searching for films by actor', actorId);
+  const films = await searchFilmsByActorId(actorId);
+  console.log(films.length, 'films found for', actorId);
+  return films;
+}
+
 
 export async function searchByActorAndFilm(actor: string, film: string): Promise<Rating | null> {
   const key = createRatingId(actor, film);

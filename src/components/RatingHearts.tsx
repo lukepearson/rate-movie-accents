@@ -2,6 +2,7 @@
 
 import { FC, MouseEventHandler, useRef, useState } from "react";
 import { RatingHeart, RatingHeartProps } from "./RatingHeart";
+import clsx from "clsx";
 
 
 interface RatingHeartsProps {
@@ -34,12 +35,12 @@ const RatingHearts: FC<RatingHeartsProps> = ({ rating, hasAlreadyVoted = false, 
   }
 
   return (
-    <div className="rating rating-lg flex justify-center" onMouseLeave={() => setHoverRating(null)}>
-      <RatingHeart {...commonProps} value={1} />
-      <RatingHeart {...commonProps} value={2} />
-      <RatingHeart {...commonProps} value={3} />
-      <RatingHeart {...commonProps} value={4} />
-      <RatingHeart {...commonProps} value={5} />
+    <div className={clsx('rating rating-lg flex justify-center', hasAlreadyVoted ? 'rating-half' : '')} onMouseLeave={() => setHoverRating(null)}>
+      <RatingHeart {...commonProps} value={1} isHalf={hasAlreadyVoted} />
+      <RatingHeart {...commonProps} value={2} isHalf={hasAlreadyVoted} />
+      <RatingHeart {...commonProps} value={3} isHalf={hasAlreadyVoted} />
+      <RatingHeart {...commonProps} value={4} isHalf={hasAlreadyVoted} />
+      <RatingHeart {...commonProps} value={5} isHalf={hasAlreadyVoted} />
     </div>
   );
 };

@@ -17,6 +17,7 @@ interface RatingHeartProps {
 const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMouseOver, value, name, isDisabled, isHalf }) => {
   const activeRating = hoverRating ?? rating;
   const isActive = Boolean(activeRating >= value);
+  const isHalfActive = Boolean(activeRating >= value - 0.5);
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
@@ -37,7 +38,7 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
         disabled
         type="radio"
         name={name}
-        checked={isActive && value === 1}
+        checked={isHalfActive}
         className={`${styles} mask mask-half-1 ms-2`}
       />
     )}
@@ -46,7 +47,8 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
         type="radio" name={name}
         onChange={handleChange}
         onClick={handleClick}
-        onMouseOver={onMouseOver} value={value} 
+        onMouseOver={onMouseOver}
+        value={value} 
         checked={isActive}
         className={clsx(styles, 'mask me-2', isHalf && 'mask-half-2')}
       />

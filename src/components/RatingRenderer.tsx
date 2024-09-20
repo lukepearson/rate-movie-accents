@@ -38,9 +38,9 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
 
   return (
     <div
-      onClick={() => isLink && router.push(urls.rating(rating.actor, rating.film))}
-      className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-md shadow-md overflow-hidden md:max-w-2xl my-4', linkClasses)}>
-      <div className="grid p-8">
+      className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-md shadow-md overflow-hidden md:max-w-2xl my-4')}>
+      <div onClick={() => isLink && router.push(urls.rating(rating.actor, rating.film))}
+        className={clsx('grid p-8', linkClasses)}>
         <div className="mb-3">
           <span className="font-bold text-white">{rating.actor}</span>&nbsp;
           <span className="text-primary">in</span>&nbsp;
@@ -62,11 +62,13 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
           />
           { hasAlreadyVoted && <div className="text-sm mt-5 text-green-500">You have already rated</div>}
         </div>
+      </div>
 
-        <details className='collapse bg-gray-900'>
+      <details className='collapse bg-gray-900 rounded-none'>
           <summary {...preventBubbles()} className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Stats</summary>
           <div className="collapse-content">
             <div className="flex flex-col justify-between mt-4">
+              Ratings distribution
               <BarChart ratings={rating.ratings} />
             </div>
 
@@ -83,8 +85,6 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
             </div>
           </div>
         </details>
-
-      </div>
 
       {isLoading && (
         <div

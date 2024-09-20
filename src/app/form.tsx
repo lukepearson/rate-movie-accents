@@ -18,7 +18,7 @@ export default function RatingsForm() {
           <h2 className="text-lg font-semibold">Search by actor and film</h2>
           <input
             aria-label="Enter the name of an actor"
-            className="input text-white input-bordered input-primary w-full max-w-xs"
+            className="input text-white input-bordered input-primary w-full max-w-sm"
             maxLength={150}
             placeholder="Actor..."
             required
@@ -29,7 +29,7 @@ export default function RatingsForm() {
           />
           <input
             aria-label="Enter the name of a film the actor has acted in"
-            className="input text-white input-bordered input-primary w-full max-w-xs"
+            className="input text-white input-bordered input-primary w-full max-w-sm"
             maxLength={150}
             placeholder="Film..."
             required

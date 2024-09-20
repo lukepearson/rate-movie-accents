@@ -39,9 +39,10 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actor, film }) => {
       <div role="alert" className="alert m-5">
         <WarningIcon className="h-6 w-6 text-primary" />
         <span className="my-5 text-center">
-          There are no ratings yet for 
-          <span className="badge badge-primary badge-lg mx-1">{actor}</span> 
-          in the film <span className="badge badge-secondary badge-lg mx-1">{film}</span>
+          <span>There are no ratings yet for&nbsp;</span>
+          <span className="badge badge-primary badge-lg mx-1 my-2">{actor}</span>
+          <span className="">&nbsp;in the film&nbsp;</span>
+          <span className="badge badge-secondary badge-lg mx-1">{film}</span>
         </span>
       </div>
 

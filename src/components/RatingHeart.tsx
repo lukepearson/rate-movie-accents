@@ -23,6 +23,8 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
   const handleClick: MouseEventHandler<HTMLInputElement> = (event) => {
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
+    event.stopPropagation();
+    event.preventDefault();
   }
   const cursorStyle = isDisabled ? "cursor-not-allowed" : "cursor-pointer";
   const styles = clsx(`mask mask-heart bg-primary`, cursorStyle);
@@ -30,7 +32,8 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
     <>
       <input 
         disabled={isDisabled}
-        type="radio" name={name} onChange={handleChange}
+        type="radio" name={name}
+        onChange={handleChange}
         onClick={handleClick}
         onMouseOver={onMouseOver} value={value} 
         checked={isActive}

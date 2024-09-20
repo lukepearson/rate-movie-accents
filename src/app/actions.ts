@@ -48,6 +48,7 @@ export async function voteOnExistingRating(ratingId: string, newRating: number) 
   if (!ratingIdResult.success) {
     return ratingIdResult.error;
   }
+  console.log('Voting on', ratingId, newRating);
   const parsedRatingId = ratingIdResult.data;
   const updatedRating = await updateRating(parsedRatingId, newRating);
 

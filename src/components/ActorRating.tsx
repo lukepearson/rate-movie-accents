@@ -5,9 +5,10 @@ import { Rating } from "@/app/models/Rating";
 import { Chat } from "@/app/models/Chat";
 import { RatingRenderer } from "@/components/RatingRenderer";
 import { useSearchParams } from "next/navigation";
-import { FC, useRef } from "react";
+import { FC, useRef, useState } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { ChatItem } from "./ChatItem";
+import clsx from "clsx";
 
 interface ActorRatingProps {
   rating: Rating;
@@ -15,6 +16,7 @@ interface ActorRatingProps {
 }
 const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
   const searchParams = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
   const [voteIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
   });
@@ -22,17 +24,21 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
     setVoteIds((ids) => [...voteIds, rating.id]);
   }
   const chatRef = useRef<HTMLTextAreaElement>(null)
+
   return (
     <div>
       <RatingRenderer
-        onChange={(newRating: Rating) => {
-          voteOnExistingRating(rating.id, newRating.rating);
+        onChange={async (newRating: Rating) => {
+          setIsLoading(true);
+          await voteOnExistingRating(rating.id, newRating.rating);
+          setIsLoading(false);
         }}
         rating={rating}
         isLink={false}
+        isLoading={isLoading}
       />
 
-      <details className="collapse bg-gray-900 border-2 border-indigo-500">
+      <details className='collapse bg-gray-900 border-2 border-indigo-500'>
         <summary className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Comments</summary>
         <div className="collapse-content">
           {chat.map((message) => (

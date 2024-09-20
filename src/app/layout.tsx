@@ -22,9 +22,9 @@ export default function RootLayout({
             </h1>
           </header>
 
-          <div className="breadcrumbs text-sm">
+          <div className="breadcrumbs text-sm mt-3">
             <ul>
-              <li><a href='/'>Home</a></li>
+              <li><a className="underline" href='/'>Navigate Home</a></li>
             </ul>
           </div>
 

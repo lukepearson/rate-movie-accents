@@ -8,14 +8,16 @@ import { useRouter } from "next/navigation";
 import { urls } from "@/utilities/Urls";
 import BarChart from "./BarChart";
 import clsx from "clsx";
+import Loading from "@/app/loading";
 
 
 interface RatingProps {
   rating: Rating;
   onChange: (rating: Rating) => void;
   isLink?: boolean;
+  isLoading?: boolean;
 }
-const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink }) => {
+const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }) => {
   const router = useRouter();
   const [votedIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
@@ -36,7 +38,7 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink }) => {
   return (
     <div
       onClick={() => isLink && router.push(urls.rating(rating.actor, rating.film))}
-      className={clsx('max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-xl shadow-md overflow-hidden md:max-w-2xl my-4', linkClasses)}>
+      className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-xl shadow-md overflow-hidden md:max-w-2xl my-4', linkClasses)}>
       <div className="grid p-8">
         <div className="mb-3">
           <span className="font-bold text-white">{rating.actor}</span>&nbsp;
@@ -74,6 +76,15 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink }) => {
           { hasAlreadyVoted && <div className="text-sm mt-5 text-green-500">You have already rated</div>}
         </div>
       </div>
+
+      {isLoading && (
+        <div
+          id="loading-overlay"
+          className="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-70"
+        >
+          <Loading />
+        </div>
+      )}
     </div>
   );
 };

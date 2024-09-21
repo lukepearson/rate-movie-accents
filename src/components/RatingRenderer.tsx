@@ -1,6 +1,6 @@
 "use client";
 
-import { Rating } from "@/app/models/Rating";
+import { getIdsFromRatingId, Rating } from "@/app/models/Rating";
 import { FC } from "react";
 import { RatingHearts } from "./RatingHearts";
 import useLocalStorageState from "use-local-storage-state";
@@ -38,8 +38,16 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
 
   return (
     <div
+      style={{ backgroundImage: `url(https://media.themoviedb.org/t/p/w220_and_h330_face/${rating.image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backfaceVisibility: 'hidden',
+        backdropFilter: 'blur(20px)',
+        backgroundBlendMode: 'soft-light',
+      }}
       className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-md shadow-md overflow-hidden md:max-w-2xl my-4')}>
-      <div onClick={() => isLink && router.push(urls.rating(rating.actor, rating.film))}
+      <div onClick={() => isLink && router.push(urls.rating(...getIdsFromRatingId(rating.id)))}
         className={clsx('grid p-8', linkClasses)}>
         <div className="mb-3">
           <span className="font-bold text-white">{rating.actor}</span>&nbsp;

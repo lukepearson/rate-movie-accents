@@ -1,6 +1,5 @@
 import { getChatMessages, searchByActorAndFilm } from "@/app/actions";
 import { CreateNewRating } from "@/components/CreateNewRating";
-import { unB64 } from "@/utilities/Sanitisation";
 import { ActorRating } from "../../../../components/ActorRating";
 
 interface ActorFilmProps {
@@ -13,13 +12,13 @@ interface ActorFilmProps {
 export default async function Page({ params }: ActorFilmProps) {
   const { actorId, filmId } = params;
 
-  const actor = unB64(actorId);
-  const film = unB64(filmId);
-  const rating = await searchByActorAndFilm(actor, film);
+  const rating = await searchByActorAndFilm(Number(actorId), Number(filmId));
 
   if (!rating) {
-    return <CreateNewRating actor={actor} film={film} />
+    return <CreateNewRating actorId={actorId} filmId={filmId} />
   }
+
+  console.log('Rating', rating);
 
   const chat = await getChatMessages(rating.id);
 

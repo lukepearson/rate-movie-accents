@@ -19,6 +19,7 @@
     "clsx": "^2.1.0",
     "daisyui": "^4.12.10",
     "date-fns": "^4.1.0",
+    "downshift": "^9.0.8",
     "geist": "^1.2.1",
     "lodash": "^4.17.21",
     "next": "latest",

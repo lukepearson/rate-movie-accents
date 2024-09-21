@@ -1,96 +1,93 @@
 "use client";
 
-import { Rating } from "./models/Rating";
-import { b64 } from "@/utilities/Sanitisation";
 import { useEffect, useRef, useState } from "react";
-import { searchFilms, searchFilmsByActorId } from "./store/tmdb";
-import { searchForActors, searchForFilms } from "./actions";
+import { searchFilmsByActorId } from "./store/tmdb";
+import { searchForActors } from "./actions";
 import { Movie, Person } from "tmdb-ts";
 import { debounce } from "lodash";
+import { Dropdown, DropdownItem } from "@/components/Dropdown";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
 
 
 export default function RatingsForm() {
-  const [actor, setActor] = useState('');
   const [actors, setActors] = useState<Person[]>([]);
-  const [film, setFilm] = useState('');
   const [films, setFilms] = useState<Movie[]>([]);
-  const actorId = useRef<number | null>(null);
+  const [filteredFilms, setFilteredFilms] = useState<Movie[]>([]);
+  const [actorSearchTerm, setActorSearchTerm] = useState('');
+  const [searchTerm, setDebouncedTerm] = useState('');
+  const [filmSearchTerm, setFilmSearchTerm] = useState('');
+  const [actorId, setActorId] = useState<number | null>(null);
+  const [filmId, setFilmId] = useState<number | null>(null);
 
-  // useEffect(() => {
-  //   if (film.length > 2) {
-  //     debounce(() => {
-  //       searchForFilmsByActor(film).then((films) => {
-  //         console.log('Films', films);
-  //         if (actorId.current) {
-  //           films = films.filter((film) => film..some((actor) => actor.id === actorId.current));
-  //         }
-  //         setFilms(films);
-  //       });
-  //     }, 500)()
-  //   }
-  // }, [film])
+  const count = useRef(0);
+  const count2 = useRef(0);
 
   useEffect(() => {
-    if (actor.length > 2) {
-      debounce(() => {
-        searchForActors(actor).then((actors) => {
-          setActors(actors);
-        });
-      }, 500)()
-    }
-  }, [actor])
+    const handler = setTimeout(() => {
+      setDebouncedTerm(actorSearchTerm);
+    }, 600);
 
-  const url = `/rating/${b64(actor)}/${b64(film)}`;
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [actorSearchTerm]);
+
+  useEffect(() => {
+    if (!searchTerm) return;
+    searchForActors(searchTerm).then((actors) => {
+      console.log(`Setting actors!!!!!!!! ${count.current++}`);
+      setActors(actors);
+    });
+  }, [searchTerm]);
+
+  useEffect(() => {
+    if (!actorId) return;
+    searchFilmsByActorId(actorId).then((films) => {
+      console.log(`Setting films!!!!!!!! ${count2.current++}`);
+      setFilms(films);
+    });
+  }, [actorId]);
+
+  const url = `/rating/${actorId}/${filmId}`;
 
   return (
     <>
       <div className="mx-8 w-full">
         <form className="relative my-8 items-center justify-center flex flex-col gap-4 p-4">
           <h2 className="text-lg font-semibold">Search by actor and film</h2>
-          <input
-            aria-label="Enter the name of an actor"
-            className="input text-white input-bordered input-primary w-full max-w-sm"
-            maxLength={150}
-            placeholder="Actor..."
-            required
-            name="actor"
-            type="text"
-            list="actors"
-            value={actor}
-            onBlur={() => {
-              const actorId = actors.find(n => n.name == actor)?.id;
-              if (!actorId) {
-                return;
-              }
-              searchFilmsByActorId(actorId).then((films) => {
-                setFilms(films);
-              });
-            }}
-            onChange={(e) => setActor(e.target.value)}
-          />
-          <datalist id="actors">
-            {actors.map((actor) => (
-              <option key={actor.id} value={actor.name} />
-            ))}
-          </datalist>
 
-          <input
-            aria-label="Enter the name of a film the actor has acted in"
-            className="input text-white input-bordered input-primary w-full max-w-sm"
-            maxLength={150}
-            placeholder="Film..."
-            required
-            name="film"
-            type="text"
-            list="films"
-            value={film}
-            onChange={(e) => setFilm(e.target.value)}
+          <Dropdown
+            id='actor'
+            label="Actor"
+            items={actors.map(n => ({ id: String(n.id), value: n.name }))}
+            setSearchTerm={(searchTerm: string) => {
+              setActorSearchTerm(searchTerm);
+            }}
+            searchTerm={actorSearchTerm}
+            onSelect={(selectedItem: DropdownItem) => {
+              console.log('Actor ID', selectedItem.id);
+              setActorId(Number(selectedItem.id));
+              setActorSearchTerm(selectedItem.value);
+            }}
           />
-          <datalist id="films">
-            {films.map((film) => (
-              <option key={film.id} value={film.title} />
-            ))}
-          </datalist>
+
+          <Dropdown
+            id='film'
+            label="Film"
+            items={filteredFilms.map(n => ({ id: String(n.id), value: n.title }))}
+            setSearchTerm={(searchTerm: string) => {
+              setFilmSearchTerm(searchTerm);
+              setFilteredFilms(films.filter(({ title }) => title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())));
+            }}
+            disabled={!actorId}
+            searchTerm={filmSearchTerm}
+            onSelect={(selectedItem: DropdownItem) => {
+              console.log('Film ID', selectedItem.id);
+              setFilmId(Number(selectedItem.id));
+              setFilmSearchTerm(selectedItem.value);
+            }}
+          />
+
           <a className="btn btn-primary" href={url}>
             Search
           </a>

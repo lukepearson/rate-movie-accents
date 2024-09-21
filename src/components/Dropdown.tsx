@@ -1,9 +1,11 @@
+import clsx from 'clsx';
 import { useCombobox } from 'downshift';
 import { FC } from 'react';
 
 interface DropdownItem {
   id: string;
   value: string;
+  type: 'actor' | 'film';
 }
 
 interface DropdownProps {
@@ -36,14 +38,13 @@ const Dropdown: FC<DropdownProps> = ({ items, searchTerm, setSearchTerm, onSelec
 
   return (
     <div className="relative">
-
-      <label className="form-control w-full max-w-xs">
+      <label className="form-control w-full">
         <div className="label">
           <span className="label-text">{label}</span>
         </div>
         <input
           {...getInputProps()}
-          className="input input-bordered input-primary w-full max-w-xs"
+          className="input input-bordered input-primary w-full"
           value={searchTerm}
           id={`${id}-input`}
           disabled={disabled}
@@ -62,9 +63,9 @@ const Dropdown: FC<DropdownProps> = ({ items, searchTerm, setSearchTerm, onSelec
             <li
               key={item.id}
               {...getItemProps({ item, index })}
-              className={`cursor-pointer px-4 py-2 ${
+              className={clsx(`cursor-pointer px-4 py-2 ${
                 highlightedIndex === index ? 'bg-blue-500 text-white' : ''
-              }`}
+              }`, item.type === 'actor' ? 'text-green-500' : 'text-blue-500')}
             >
               {item.value}
             </li>

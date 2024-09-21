@@ -1,96 +1,117 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { searchFilmsByActorId } from "./store/tmdb";
-import { searchForActors } from "./actions";
-import { Movie, Person } from "tmdb-ts";
-import { debounce } from "lodash";
+import { fetchFilmById, searchForActors, searchForActorsByFilm, searchForFilms, searchForFilmsByActor } from "./actions";
+import { Cast, Movie, Person, PersonMovieCast } from "tmdb-ts";
 import { Dropdown, DropdownItem } from "@/components/Dropdown";
-import { useDebounce, useDebouncedCallback } from "use-debounce";
+import { urls } from "@/utilities/Urls";
+import { sortBy } from "lodash";
 
 
 export default function RatingsForm() {
   const [actors, setActors] = useState<Person[]>([]);
   const [films, setFilms] = useState<Movie[]>([]);
-  const [filteredFilms, setFilteredFilms] = useState<Movie[]>([]);
-  const [actorSearchTerm, setActorSearchTerm] = useState('');
-  const [searchTerm, setDebouncedTerm] = useState('');
+  const [cast, setCast] = useState<Cast[]>([]);
+  const [actorFilms, setActorFilms] = useState<PersonMovieCast[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [combinedItems, setCombinedItems] = useState<(Person | Movie)[]>([]);
+  const [debouncedSearchTerm, setDebouncedTerm] = useState('');
   const [filmSearchTerm, setFilmSearchTerm] = useState('');
   const [actorId, setActorId] = useState<number | null>(null);
   const [filmId, setFilmId] = useState<number | null>(null);
 
-  const count = useRef(0);
-  const count2 = useRef(0);
+  useEffect(() => {
+    setCombinedItems(sortBy([...actors, ...films], 'popularity').reverse());
+  }, [actors, films]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedTerm(actorSearchTerm);
+      setDebouncedTerm(filmSearchTerm);
     }, 600);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [actorSearchTerm]);
+  }, [filmSearchTerm]);
 
   useEffect(() => {
     if (!searchTerm) return;
+    searchForFilms(searchTerm).then((films) => {
+      setFilms(films);
+    });
     searchForActors(searchTerm).then((actors) => {
-      console.log(`Setting actors!!!!!!!! ${count.current++}`);
       setActors(actors);
     });
   }, [searchTerm]);
 
   useEffect(() => {
+    if (!filmId) return;
+    searchForActorsByFilm(filmId).then((cast) => {
+      setCast(cast);
+    });
+  }, [filmId]);
+
+  useEffect(() => {
     if (!actorId) return;
-    searchFilmsByActorId(actorId).then((films) => {
-      console.log(`Setting films!!!!!!!! ${count2.current++}`);
-      setFilms(films);
+    searchForFilmsByActor(actorId).then((films) => {
+      setActorFilms(films);
     });
   }, [actorId]);
 
-  const url = `/rating/${actorId}/${filmId}`;
-
   return (
     <>
-      <div className="mx-8 w-full">
-        <form className="relative my-8 items-center justify-center flex flex-col gap-4 p-4">
-          <h2 className="text-lg font-semibold">Search by actor and film</h2>
-
-          <Dropdown
-            id='actor'
-            label="Actor"
-            items={actors.map(n => ({ id: String(n.id), value: n.name }))}
-            setSearchTerm={(searchTerm: string) => {
-              setActorSearchTerm(searchTerm);
-            }}
-            searchTerm={actorSearchTerm}
-            onSelect={(selectedItem: DropdownItem) => {
-              console.log('Actor ID', selectedItem.id);
-              setActorId(Number(selectedItem.id));
-              setActorSearchTerm(selectedItem.value);
-            }}
-          />
-
+      <div className="w-full">
+        <form className="relative my-8 items-center justify-center flex flex-col gap-4">
           <Dropdown
             id='film'
-            label="Film"
-            items={filteredFilms.map(n => ({ id: String(n.id), value: n.title }))}
+            label="Search by actor or film"
+            items={combinedItems.map(n => {
+              if ('title' in n) {
+                return { id: String(n.id), value: n.title, type: 'film' };
+              } else {
+                return { id: String(n.id), value: n.name, type: 'actor' };
+              }
+            })}
             setSearchTerm={(searchTerm: string) => {
-              setFilmSearchTerm(searchTerm);
-              setFilteredFilms(films.filter(({ title }) => title.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())));
+              setSearchTerm(searchTerm);
             }}
-            disabled={!actorId}
-            searchTerm={filmSearchTerm}
+            searchTerm={searchTerm}
             onSelect={(selectedItem: DropdownItem) => {
               console.log('Film ID', selectedItem.id);
-              setFilmId(Number(selectedItem.id));
-              setFilmSearchTerm(selectedItem.value);
+              if (selectedItem.type === 'actor') {
+                setActorId(Number(selectedItem.id));
+                setFilmId(null);
+              } else {
+                setFilmId(Number(selectedItem.id));
+                setActorId(null);
+              }
+              setSearchTerm(selectedItem.value);
             }}
           />
 
-          <a className="btn btn-primary" href={url}>
-            Search
-          </a>
+          {actorId && (
+            <div className="menu bg-base-200 p-4 rounded-box">
+              <ul>
+                {actorFilms.map((film) => (
+                  <li className="my-2" key={film.id}>
+                    <a className="btn btn-ghost w-full text-left" href={urls.rating(actorId, film.id)}>{film.title}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {filmId && (
+            <div className="menu bg-base-200 p-4 rounded-box">
+              <ul>
+                {cast.map((actor) => (
+                  <li className="my-2" key={actor.id}>
+                    <a className="btn btn-ghost w-full text-left" href={urls.rating(actor.id, filmId)}>{actor.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </form>
       </div>
     </>

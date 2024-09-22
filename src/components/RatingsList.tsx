@@ -26,6 +26,7 @@ const RatingsList: FC<RatingsListProps> = ({ ratings }) => {
           }}
           rating={rating}
           isLink
+          showStats={false}
           isLoading={isLoading}
         />
       ))}

@@ -16,9 +16,10 @@ interface RatingProps {
   rating: Rating;
   onChange: (rating: Rating) => void;
   isLink?: boolean;
+  showStats?: boolean;
   isLoading?: boolean;
 }
-const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }) => {
+const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading, showStats }) => {
   const router = useRouter();
   const [votedIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
@@ -80,7 +81,8 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
         </div>
       </div>
 
-      <details className='collapse bg-gray-900 rounded-none'>
+      {showStats && (
+        <details className='collapse bg-gray-900 rounded-none'>
           <summary {...preventBubbles()} className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Stats</summary>
           <div className="collapse-content">
             <div className="flex flex-col justify-between mt-4">
@@ -101,6 +103,7 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
             </div>
           </div>
         </details>
+      )}
 
       {isLoading && (
         <div

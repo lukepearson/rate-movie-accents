@@ -17,7 +17,7 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div>
+    <div className="mb-5">
       <RatingRenderer
         onChange={async (newRating: Rating) => {
           setIsLoading(true);
@@ -26,14 +26,12 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
         }}
         rating={rating}
         isLink={false}
+        showStats={true}
         isLoading={isLoading}
       />
 
       <ChatRenderer chat={chat} rating={rating} submitChatMessage={submitChatMessage} />
 
-      <nav className="my-8">
-        <a href="/">Back to home page</a>
-      </nav>
     </div>
   );
 }

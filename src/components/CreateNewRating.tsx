@@ -71,12 +71,14 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
 
       <h2 className="text-center text-white mb-4 text-xl">Submit a new rating:</h2>
 
-      <form className="flex flex-col items-center gap-4 p-4" action={(e) => {
-        if (!actor || !film) return;
-        const newVoteId = createRatingId(actor?.id, film?.id);
-        setVoteIds([...votedIds, newVoteId]);
-        submitNewRating(e)
-      }}>
+      <form className="flex flex-col items-center gap-4 py-4"
+        action={(e) => {
+          if (!actor || !film) return;
+          const newVoteId = createRatingId(actor?.id, film?.id);
+          setVoteIds([...votedIds, newVoteId]);
+          submitNewRating(e)
+        }}
+      >
         <input type="hidden" name="actorId" value={actor?.id} />
         <input type="hidden" name="filmId" value={film?.id} />
         <input type="hidden" name="rating" value={rating} />

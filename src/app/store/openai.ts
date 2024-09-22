@@ -10,9 +10,9 @@ const prompt  = (message: string) => `
   <${message}>
 `
 
-const moderateChatMessage = async (user: string, message: string) => {
+const moderateChatMessage = async (message: string) => {
   const chatCompletion = await client.chat.completions.create({
-    messages: [{ role: 'user', content: prompt(message), name: user }],
+    messages: [{ role: 'user', content: prompt(message) }],
     model: 'gpt-3.5-turbo',
   });
 

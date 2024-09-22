@@ -19,6 +19,7 @@ const ChatRenderer: FC<ChatRendererProps> = ({ chat, rating, submitChatMessage }
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    event.stopPropagation();
     setIsLoading(true);
 
     try {

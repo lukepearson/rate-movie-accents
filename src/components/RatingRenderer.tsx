@@ -77,7 +77,7 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading, 
             onRatingChange={handleChange}
             rating={rating.rating}
           />
-          { hasAlreadyVoted && <div className="text-sm mt-5 text-green-500">You have already rated</div>}
+          { hasAlreadyVoted && <div className="text-sm mt-5 text-green-500">Thanks for rating!</div>}
         </div>
       </div>
 

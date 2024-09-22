@@ -103,7 +103,7 @@ export async function submitChatMessage(formData: FormData) {
   }
 
   console.log('Original message', message);
-  const moderatedMessage = await moderateChatMessage(author, message);
+  const moderatedMessage = await moderateChatMessage(message);
   console.log('Moderated message', moderatedMessage);
 
   const chatMessage: Chat = ChatSchema.parse({

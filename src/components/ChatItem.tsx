@@ -9,7 +9,7 @@ interface ChatItemProps {
 const ChatItem: FC<ChatItemProps> = ({ chat }) => {
   const timeDelta = formatDistanceToNow(chat.created_at, { addSuffix: true });
   return (
-    <div className="chat chat-start max-w-md">
+    <div className="chat chat-start max-w-md mt-2">
       <div className="chat-header">
         {chat.author}
         <time className="text-xs opacity-50 ps-2">{timeDelta}</time>

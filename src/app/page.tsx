@@ -48,9 +48,11 @@ export default async function Page() {
   });
 
   return (
-    <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full rounded-md h-full">
-      <RatingsForm />
-      <RatingsList ratings={sortedRatings} />
+    <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full h-full">
+      <div className="items-center justify-center flex flex-col">
+        <RatingsForm />
+        <RatingsList ratings={sortedRatings} />
+      </div>
     </div>
   );
 }

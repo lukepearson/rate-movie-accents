@@ -14,14 +14,7 @@ interface ActorRatingProps {
   chat: Array<Chat>;
 }
 const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
-  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [voteIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
-    defaultValue: [],
-  });
-  if (searchParams?.get("voted") === "true") {
-    setVoteIds((ids) => [...voteIds, rating.id]);
-  }
 
   return (
     <div>

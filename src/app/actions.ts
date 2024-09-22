@@ -3,10 +3,11 @@
 import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
 import { createRating, createRatingId, getIdsFromRatingId, Rating, ratingIdSchema, RatingSchema } from "./models/Rating";
-import { toChatId, ChatSchema } from "./models/Chat";
+import { toChatId, ChatSchema, Chat } from "./models/Chat";
 import { urls } from "@/utilities/Urls";
 import { updateRating } from "./store/kv";
 import { getActorById, getFilmById, searchActors, searchActorsByFilmId, searchFilms, searchFilmsByActorId } from "./store/tmdb";
+import { moderateChatMessage } from "./store/openai";
 
 
 export async function submitNewRating(formData: FormData) {
@@ -19,12 +20,13 @@ export async function submitNewRating(formData: FormData) {
     actorId, filmId, rating, nativeAccent, attemptedAccent,
   });
 
-  const actor = (await getActorById(actorId)).name;
-  const film = (await getFilmById(filmId)).title;
+  const actor = await getActorById(actorId);
+  const film = await getFilmById(filmId);
 
-  const image = (await getFilmById(filmId)).backdrop_path;
+  const actorImagePath = actor.profile_path;
+  const filmImagePath = film.backdrop_path;
 
-  const newRating = createRating(actor, film, actorId, filmId, nativeAccent, attemptedAccent, rating, image);
+  const newRating = createRating(actor.name, film.title, actorId, filmId, nativeAccent, attemptedAccent, rating, actorImagePath, filmImagePath);
   
   await kv.hset(newRating.id, newRating);
   await kv.zadd("items_by_score", {
@@ -99,9 +101,14 @@ export async function submitChatMessage(formData: FormData) {
   if (!author || !message || !ratingId) {
     throw new Error("Missing name or message or ratingId");
   }
-  const chatMessage = ChatSchema.parse({
+
+  console.log('Original message', message);
+  const moderatedMessage = await moderateChatMessage(author, message);
+  console.log('Moderated message', moderatedMessage);
+
+  const chatMessage: Chat = ChatSchema.parse({
     author,
-    message,
+    message: moderatedMessage,
     created_at: new Date().toISOString(),
   });
   

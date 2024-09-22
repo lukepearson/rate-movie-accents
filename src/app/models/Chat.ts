@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const ChatSchema = z.object({
   author: z.string().max(30),
-  message: z.string().max(120),
+  message: z.string(),
   created_at: z.string(),
 });
 

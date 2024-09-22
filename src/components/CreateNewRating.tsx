@@ -29,14 +29,12 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
   useEffect(() => {
     fetchActorById(Number(actorId)).then((actor) => {
       setActor(actor);
-      console.log('Actor', actor);
     });
   }, [actorId]);
 
   useEffect(() => {
     fetchFilmById(Number(filmId)).then((film) => {
       setFilm(film);
-      console.log('Film', film);
     });
   }, [filmId]);
 

@@ -15,7 +15,7 @@ const RatingsList: FC<RatingsListProps> = ({ ratings }) => {
     return <div>No ratings found</div>;
   }
   return (
-    <div className="items-center justify-center flex flex-col">
+    <div>
       {ratings.map((rating: Rating, index: number) => (
         <RatingRenderer
           key={rating.id}

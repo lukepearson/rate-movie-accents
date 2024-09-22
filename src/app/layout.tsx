@@ -17,7 +17,7 @@ export default function RootLayout({
       <body>
         <div className="flex flex-col items-center justify-center min-h-screen py-2">
           <header className="flex justify-center items-center w-full h-24 border-b">
-            <h1 className="text-lg text-primary sm:text-2xl font-bold mb-2">
+            <h1 className="text-4xl text-white font-bold font-sans mb-2">
               Rate film accents
             </h1>
           </header>
@@ -33,6 +33,12 @@ export default function RootLayout({
               {children}
             </main>
           </Suspense>
+
+          <ul>
+            <li>Makes too many api requests on search</li>
+            <li>Doesn't handle errors well</li>
+            <li>Doesn't handle empty search results</li>
+          </ul>
 
           <footer className="flex items-center justify-center w-full h-24 border-t">
             <p className="text-sm text-center text-gray-500">

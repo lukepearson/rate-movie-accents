@@ -23,13 +23,14 @@ const RatingSchema = z.object({
   rating: z.number({ coerce: true }).min(minRating).max(maxRating),
   ratings: z.object({ 1: z.number(), 2: z.number(), 3: z.number(), 4: z.number(), 5: z.number() }),
   votes: z.number({ coerce: true }).default(0),
-  image: z.string(),
+  actorImagePath: z.string().default(''),
+  filmImagePath: z.string().default(''),
   created_at: z.string(),
 });
 
 type Rating = z.infer<typeof RatingSchema>;
 
-function createRating(actor: string, film: string, actorId: number, filmId: number, nativeAccent: string, attemptedAccent: string, rating: number, image: string): Rating {
+function createRating(actor: string, film: string, actorId: number, filmId: number, nativeAccent: string, attemptedAccent: string, rating: number, actorImagePath: string, filmImagePath: string): Rating {
   const ratings = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   const newRating: Rating = {
     actor,
@@ -40,7 +41,8 @@ function createRating(actor: string, film: string, actorId: number, filmId: numb
     votes: 1,
     ratings: ratings,
     id: createRatingId(actorId, filmId),
-    image,
+    actorImagePath,
+    filmImagePath,
     created_at: new Date().toISOString(),
   };
   if (isKeyOfRatings(rating)) newRating.ratings[rating] = 1;

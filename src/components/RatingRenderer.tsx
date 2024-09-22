@@ -34,21 +34,29 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
     });
   };
 
-  const linkClasses = isLink ? 'cursor-pointer hover:bg-gray-800' : '';
+  const linkClasses = isLink ? 'cursor-pointer hover:border-indigo-300 hover:mix-blend-normal' : '';
 
   return (
     <div
-      style={{ backgroundImage: `url(https://media.themoviedb.org/t/p/w220_and_h330_face/${rating.image})`,
+      style={{ backgroundImage: `url(https://media.themoviedb.org/t/p/w220_and_h330_face/${rating.filmImagePath})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
         backfaceVisibility: 'hidden',
         backdropFilter: 'blur(20px)',
-        backgroundBlendMode: 'soft-light',
+        backgroundBlendMode: 'luminosity',
       }}
-      className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-md shadow-md overflow-hidden md:max-w-2xl my-4')}>
-      <div onClick={() => isLink && router.push(urls.rating(...getIdsFromRatingId(rating.id)))}
-        className={clsx('grid p-8', linkClasses)}>
+      onClick={() => isLink && router.push(urls.rating(...getIdsFromRatingId(rating.id)))}
+      className={clsx('relative max-w-md mx-auto bg-gray-900 border-2 border-indigo-500 rounded-md shadow-md overflow-hidden md:max-w-2xl my-4 p-8', linkClasses)}>
+      <div
+        className={clsx('grid bg-gray-800 bg-opacity-80 p-3')}>
+
+        <div className="avatar mx-auto p-5">
+          <div className="ring-primary ring-offset-base-100 w-24 rounded-full ring ring-offset-2">
+            <img alt={rating.actor} src={`https://media.themoviedb.org/t/p/w220_and_h330_face/${rating.actorImagePath}`} />
+          </div>
+        </div>
+
         <div className="mb-3">
           <span className="font-bold text-white">{rating.actor}</span>&nbsp;
           <span className="text-primary">in</span>&nbsp;
@@ -56,10 +64,10 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading }
         </div>
         <hr />
         <div className="mt-3">
-          <span className="text-sm text-gray-500">Actor: <span className="font-semibold text-white">{rating.nativeAccent}</span></span>
+          <span className="text-sm text-gray-300">Actor: <span className="font-semibold text-white">{rating.nativeAccent}</span></span>
         </div>
         <div className="mt-3">
-          <span className="text-sm text-gray-500"> Acting: <span className="font-semibold text-white">{rating.attemptedAccent}</span></span>
+          <span className="text-sm text-gray-300"> Acting: <span className="font-semibold text-white">{rating.attemptedAccent}</span></span>
         </div>
 
         <div className="mt-6">

@@ -18,8 +18,6 @@ export default async function Page({ params }: ActorFilmProps) {
     return <CreateNewRating actorId={actorId} filmId={filmId} />
   }
 
-  console.log('Rating', rating);
-
   const chat = await getChatMessages(rating.id);
 
   return <ActorRating rating={rating} chat={chat} />

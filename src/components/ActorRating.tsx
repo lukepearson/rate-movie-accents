@@ -32,6 +32,10 @@ const ActorRating: FC<ActorRatingProps> = ({ rating, chat }) => {
 
       <ChatRenderer chat={chat} rating={rating} submitChatMessage={submitChatMessage} />
 
+      <div className='mt-5'>
+        <a href='/' className='link mt-5'>Back</a>
+      </div>
+
     </div>
   );
 }

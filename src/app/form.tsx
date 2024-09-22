@@ -31,7 +31,7 @@ export default function RatingsForm() {
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedTerm(searchTerm);
-    }, 600);
+    }, 400);
 
     return () => {
       clearTimeout(handler);

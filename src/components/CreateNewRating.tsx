@@ -128,9 +128,9 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
         <button
           disabled={isInvalid}
           type="submit"
-          className="btn btn-primary text-white p-3 rounded-full focus:cursor-auto disabled:bg-ghost"
+          className="btn btn-primary text-white p-3 px-5 focus:cursor-auto disabled:bg-ghost"
         >
-          <UpArrow className="h-6 w-6 text-white" />
+          Submit
         </button>
       </form>
 

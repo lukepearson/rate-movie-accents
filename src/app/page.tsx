@@ -51,6 +51,9 @@ export default async function Page() {
     <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full h-full">
       <div className="items-center justify-center flex flex-col">
         <RatingsForm />
+        <div>
+          <h2>Popular accents</h2>
+        </div>
         <RatingsList ratings={sortedRatings} />
       </div>
     </div>

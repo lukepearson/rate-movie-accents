@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { fetchFilmById, searchForActors, searchForActorsByFilm, searchForFilms, searchForFilmsByActor } from "./actions";
+import { searchForActors, searchForActorsByFilm, searchForFilms, searchForFilmsByActor } from "./actions";
 import { Cast, Movie, Person, PersonMovieCast } from "tmdb-ts";
 import { Dropdown, DropdownItem } from "@/components/Dropdown";
 import { urls } from "@/utilities/Urls";
 import { sortBy } from "lodash";
+import { filterBy } from "@/utilities/Filter";
 
 
 export default function RatingsForm() {
@@ -18,6 +19,10 @@ export default function RatingsForm() {
   const [debouncedSearchTerm, setDebouncedTerm] = useState('');
   const [actorId, setActorId] = useState<number | null>(null);
   const [filmId, setFilmId] = useState<number | null>(null);
+  const [filterTerm, setFilterTerm] = useState('');
+  const filterRef = useRef<HTMLInputElement>(null);
+
+  const filterType = actorId ? 'films' : 'actors';
 
   useEffect(() => {
     setCombinedItems(sortBy([...actors, ...films], 'popularity').reverse());
@@ -63,6 +68,7 @@ export default function RatingsForm() {
         <Dropdown
           id='film'
           label="Search by actor or film"
+          autoFocus
           items={combinedItems.map(n => {
             if ('title' in n) {
               return { id: String(n.id), value: n.title, type: 'film' };
@@ -75,7 +81,7 @@ export default function RatingsForm() {
           }}
           searchTerm={searchTerm}
           onSelect={(selectedItem: DropdownItem) => {
-            console.log('Film ID', selectedItem.id);
+            console.log('Selected', selectedItem);
             if (selectedItem.type === 'actor') {
               setActorId(Number(selectedItem.id));
               setFilmId(null);
@@ -84,13 +90,18 @@ export default function RatingsForm() {
               setActorId(null);
             }
             setSearchTerm(selectedItem.value);
+            filterRef.current?.focus();
           }}
         />
+
+        { actorId || filmId ? (
+          <input autoFocus ref={filterRef} className="input input-bordered border-primary w-full" placeholder={`Filter ${filterType}...`} value={filterTerm} onChange={e => setFilterTerm(e.currentTarget.value)} />
+        ) : null }
 
         {actorId && (
           <div className="menu bg-base-200 p-4 rounded-box">
             <ul>
-              {actorFilms.map((film) => (
+              {actorFilms.filter(filterBy(filterTerm, 'title')).map((film) => (
                 <li className="my-2" key={film.id}>
                   <a className="btn btn-ghost w-full text-left" href={urls.rating(actorId, film.id)}>{film.title}</a>
                 </li>
@@ -102,7 +113,7 @@ export default function RatingsForm() {
         {filmId && (
           <div className="menu bg-base-200 p-4 rounded-box">
             <ul>
-              {cast.map((actor) => (
+              {cast.filter(filterBy(filterTerm, 'name')).map((actor) => (
                 <li className="my-2" key={actor.id}>
                   <a className="btn btn-ghost w-full text-left" href={urls.rating(actor.id, filmId)}>{actor.name}</a>
                 </li>

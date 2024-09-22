@@ -8,6 +8,7 @@ import { RatingHearts } from "./RatingHearts";
 import useLocalStorageState from "use-local-storage-state";
 import { createRatingId } from "@/app/models/Rating";
 import { MovieDetails, PersonDetails } from "tmdb-ts";
+import Loading from "@/app/loading";
 
 interface CreateNewRatingProps {
   actorId: string;
@@ -46,22 +47,29 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
       });
   }, []);
 
+  const isLoading = !actor || !film;
+
   const isInvalid = !nativeAccent || !attemptedAccent;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center justify-center">
-      
-      <div role="alert" className="alert m-5">
-        <WarningIcon className="h-6 w-6 text-primary" />
-        <span className="my-5 text-center">
-          <span>There are no ratings yet for&nbsp;</span>
-          <span className="badge badge-primary badge-lg mx-1 my-2">{actor?.name}</span>
-          <span className="">&nbsp;in the film&nbsp;</span>
-          <span className="badge badge-secondary badge-lg mx-1">{film?.title}</span>
-        </span>
-      </div>
+        <div className="p-8 my-5 mb-9 bg-gray-800 border-2 border-primary rounded-md flex flex-col items-center justify-center leading-loose">
+          <p><WarningIcon className="h-10 w-10 text-primary mb-8" /></p>
+          <p>There are no ratings yet for&nbsp;</p>
+          <p className="text-primary mx-1">{actor?.name}</p>
+          <p className="">&nbsp;in the film&nbsp;</p>
+          <p className="text-secondary mx-1">{film?.title}</p>
+        </div>
 
-      <h2 className="text-center mb-4 text-xl">Submit a new rating:</h2>
+      <h2 className="text-center text-white mb-4 text-xl">Submit a new rating:</h2>
 
       <form className="flex flex-col items-center gap-4 p-4" action={(e) => {
         if (!actor || !film) return;
@@ -73,14 +81,14 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
         <input type="hidden" name="filmId" value={film?.id} />
         <input type="hidden" name="rating" value={rating} />
         
-        <label className="form-control w-full max-w-xs">
+        <label className="form-control w-full">
           <div className="label">
             <span className="label-text">Native Accent</span>
           </div>
           <input 
             type="text" 
             name="nativeAccent" 
-            className="input input-bordered input-primary w-full max-w-xs placeholder-gray-500"
+            className="input input-bordered input-primary w-full placeholder-gray-500"
             value={nativeAccent}
             list="accent-list"
             id="nativeAccent"
@@ -89,15 +97,14 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
           />
         </label>
 
-        
-        <label className="form-control w-full max-w-xs">
+        <label className="form-control w-full">
           <div className="label">
             <span className="label-text">Attempted Accent</span>
           </div>
           <input 
             type="text" 
             name="attemptedAccent" 
-            className="input input-bordered input-primary w-full max-w-xs placeholder-gray-500"
+            className="input input-bordered input-primary w-full placeholder-gray-500"
             value={attemptedAccent}
             list="accent-list"
             id="attemptedAccent"

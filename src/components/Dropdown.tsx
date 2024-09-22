@@ -18,9 +18,10 @@ interface DropdownProps {
   setSearchTerm: (value: string) => void;
   onSelect: (value: DropdownItem) => void;
   disabled?: boolean;
+  autoFocus?: boolean;
 }
 
-const Dropdown: FC<DropdownProps> = ({ items, searchTerm, setSearchTerm, onSelect, disabled, id, label }) => {
+const Dropdown: FC<DropdownProps> = ({ items, searchTerm, setSearchTerm, onSelect, disabled, autoFocus, id, label }) => {
 
   const {
     isOpen,
@@ -52,8 +53,9 @@ const Dropdown: FC<DropdownProps> = ({ items, searchTerm, setSearchTerm, onSelec
           value={searchTerm}
           id={`${id}-input`}
           disabled={disabled}
+          autoFocus={autoFocus}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && selectedItem) {
+            if (e.key === 'Enter' && highlightedIndex !== -1 && searchTerm.length) {
               onSelect(items[highlightedIndex || 0]);
             }
             if (e.key === 'Down' || e.key === 'ArrowDown') {

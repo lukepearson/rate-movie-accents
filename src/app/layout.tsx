@@ -29,7 +29,7 @@ export default function RootLayout({
           </div>
 
           <Suspense fallback={<Loading />}>
-            <main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-20 text-center">
+            <main className="flex flex-col items-center justify-center flex-1 px-4 sm:px-20 text-center w-full w-max-md">
               {children}
             </main>
           </Suspense>

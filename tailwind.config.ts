@@ -7,7 +7,11 @@ export default {
     "./src/components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      borderRadius: {
+        DEFAULT: '2px',
+      },
+    },
   },
   future: {
     hoverOnlyWhenSupported: true,

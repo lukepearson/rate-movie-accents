@@ -34,12 +34,6 @@ export default function RootLayout({
             </main>
           </Suspense>
 
-          <ul>
-            <li>Makes too many api requests on search</li>
-            <li>Doesn't handle errors well</li>
-            <li>Doesn't handle empty search results</li>
-          </ul>
-
           <footer className="flex items-center justify-center w-full h-24 border-t">
             <p className="text-sm text-center text-gray-500">
               Made using{" "}

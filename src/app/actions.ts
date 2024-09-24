@@ -7,7 +7,7 @@ import { toChatId, ChatSchema, Chat } from "./models/Chat";
 import { urls } from "@/utilities/Urls";
 import { updateRating } from "./store/kv";
 import { getActorById, getFilmById, searchActors, searchActorsByFilmId, searchFilms, searchFilmsByActorId } from "./store/tmdb";
-import { moderateChatMessage } from "./store/openai";
+import { moderateChatMessage, suggestAccents } from "./store/openai";
 
 
 export async function submitNewRating(formData: FormData) {
@@ -134,4 +134,9 @@ export async function fetchActorById(actorId: number) {
 
 export async function fetchFilmById(filmId: number) {
   return getFilmById(Number(filmId));
+}
+
+export async function fetchAccentsByActorAndFilm(actor: string, film: string) {
+  const accents = await suggestAccents(actor, film);
+  return accents;
 }

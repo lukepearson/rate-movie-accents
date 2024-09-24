@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchActorById, fetchFilmById, submitNewRating } from "@/app/actions";
+import { fetchAccentsByActorAndFilm, fetchActorById, fetchFilmById, submitNewRating } from "@/app/actions";
 import { FC, useEffect, useState } from "react";
 import UpArrow from '@heroicons/react/24/outline/ArrowUpCircleIcon';
 import WarningIcon from '@heroicons/react/24/outline/ExclamationCircleIcon';
@@ -26,6 +26,7 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
   });
   const [actor, setActor] = useState<PersonDetails | null>(null);
   const [film, setFilm] = useState<MovieDetails | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchActorById(Number(actorId)).then((actor) => {
@@ -40,14 +41,22 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
   }, [filmId]);
 
   useEffect(() => {
+    if (actor?.name && film?.title) {
+      fetchAccentsByActorAndFilm(actor.name, film.title).then((accent) => {
+        setNativeAccent(accent?.nativeAccent || '');
+        setAttemptedAccent(accent?.attemptedAccent || '');
+        setIsLoading(false);
+      });
+    }
+  }, [actor?.name, film?.title])
+
+  useEffect(() => {
     fetch('/accents.json')
       .then((response) => response.json())
       .then((data) => {
         setAccents(data);
       });
   }, []);
-
-  const isLoading = !actor || !film;
 
   const isInvalid = !nativeAccent || !attemptedAccent;
 

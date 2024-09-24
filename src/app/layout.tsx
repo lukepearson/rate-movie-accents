@@ -3,6 +3,7 @@ import "./globals.css";
 import { GeistSans } from "geist/font/sans";
 import Loading from "./loading";
 import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 
 export default function RootLayout({
@@ -13,6 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en-GB" className={GeistSans.className}>
       <Analytics />
+      <SpeedInsights />
       <head>
         <script src="https://cdn.jsdelivr.net/npm/theme-change@2.0.2/index.js"></script>
       </head>

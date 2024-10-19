@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - name: Log contents of github event
-        run: echo ${{ toJson(github.event) }}
+      - name: Log github ref
+        run: echo $GITHUB_REF
 
       - name: Restore browser cache
         uses: actions/cache@v3.3.1

@@ -21,9 +21,7 @@ jobs:
         run: yarn
 
       - name: Log contents of github event
-        run: |
-          echo ${{ github.event.GITHUB_REF }}
-          echo ${{ github.event.GITHUB_SHA }}
+        run: echo ${{ toJson(github.event) }}
 
       - name: Restore browser cache
         uses: actions/cache@v3.3.1

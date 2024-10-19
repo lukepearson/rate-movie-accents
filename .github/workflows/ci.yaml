@@ -18,3 +18,65 @@ jobs:
       - run: yarn
       - name: Running tests
         run: yarn test --coverage --colors
+
+  e2e-test:
+    name: Wait for deployment
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: read
+      pull-requests: read
+      checks: write
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+  
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Get the latest Vercel deployment
+        id: get_vercel_deployment
+        env:
+          VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          COMMIT_HASH: ${{ github.sha }}
+        run: |
+          node ./wait-for-vercel-deployment.js
+
+      - name: Browser cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright
+          restore-keys: playwright
+
+      - name: Install Browsers
+        run: |
+          echo $GITHUB_REF
+          npx playwright install --with-deps
+
+      - name: E2E tests
+        run: yarn test:e2e
+        env:
+          BASE_URL: ${{ steps.get_vercel_deployment.outputs.url }}
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Playwright E2E Test Report
+          message: |
+            [E2E Test Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})

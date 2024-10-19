@@ -21,7 +21,7 @@ jobs:
         run: yarn
 
       - name: Log github ref
-        run: echo $GITHUB_REF
+        run: export GITHUB_REF=${{  github.event.deployment.ref }}
 
       - name: Restore browser cache
         uses: actions/cache@v3.3.1
@@ -31,7 +31,9 @@ jobs:
           restore-keys: playwright
 
       - name: Install Browsers
-        run: npx playwright install --with-deps
+        run: |
+          echo $GITHUB_REF
+          npx playwright install --with-deps
 
       - name: E2E tests
         run: yarn test:e2e

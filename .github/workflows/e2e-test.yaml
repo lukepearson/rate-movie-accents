@@ -42,7 +42,7 @@ jobs:
       - name: E2E tests
         run: npm run test-e2e-ci
         env:
-          HOST_URL: ${{ github.event.deployment_status.environment_url }}
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
 
       - name: Upload test report
         uses: actions/upload-artifact@v3

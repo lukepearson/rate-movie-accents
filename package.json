@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "next dev --turbo",
     "test": "jest",
+    "test:e2e": "yarn playwright test",
     "build": "next build",
     "start": "next start"
   },
@@ -45,6 +46,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.1",
     "@testing-library/jest-dom": "^6.6.2"
   }
 }

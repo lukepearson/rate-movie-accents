@@ -1,0 +1,59 @@
+﻿name: Playwright E2E Tests
+
+on:
+  deployment_status:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Cache browsers
+        uses: actions/cache@v3
+        id: cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright and its dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        working-directory: ${{ github.workspace }}
+        run: npx playwright install chrome --with-deps
+  
+      - name: Install just Playwright's dependencies
+        if: steps.cache.outputs.cache-hit == 'true'
+        working-directory: ${{ github.workspace }}
+        run: npx playwright install-deps
+
+      - name: E2E tests
+        run: npm run test-e2e-ci
+        env:
+          HOST_URL: ${{ github.event.deployment_status.environment_url }}
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report
+
+      - name: PR comment
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Playwright E2E Test Report
+          message: |
+            [E2E Test Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})

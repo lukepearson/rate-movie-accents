@@ -20,7 +20,15 @@ jobs:
       - name: Install dependencies
         run: yarn
 
-      - uses: browser-actions/setup-chrome@v1
+      - name: Restore browser cache
+        uses: actions/cache@v3.3.1
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright
+          restore-keys: playwright
+
+      - name: Install Browsers
+        run: npx playwright install --with-deps
 
       - name: E2E tests
         run: yarn test:e2e

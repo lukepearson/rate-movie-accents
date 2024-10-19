@@ -15,7 +15,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          cache: npm
+          cache: yarn
 
       - name: Cache browsers
         uses: actions/cache@v3
@@ -27,7 +27,7 @@ jobs:
             playwright-
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn
 
       - name: Install Playwright and its dependencies
         if: steps.cache.outputs.cache-hit != 'true'
@@ -40,7 +40,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: E2E tests
-        run: npm run test-e2e-ci
+        run: yarn test:e2e
         env:
           BASE_URL: ${{ github.event.deployment_status.environment_url }}
 

@@ -5,6 +5,7 @@
     "test": "jest",
     "test:e2e": "yarn playwright test",
     "build": "next build",
+    "prebuild": "echo $VERCEL_GIT_COMMIT_REF",
     "start": "next start"
   },
   "dependencies": {

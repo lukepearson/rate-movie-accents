@@ -49,6 +49,7 @@ jobs:
           BRANCH_NAME: ${{ github.head_ref }}
           COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
         run: |
+          cd .github/scripts
           node ./wait-for-vercel-deployment.js
           echo "VERCEL_DEPLPYMENT_BASE_URL=$(cat deployment-url.txt)" >> "$GITHUB_OUTPUT"
 

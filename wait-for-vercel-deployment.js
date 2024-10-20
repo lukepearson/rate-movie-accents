@@ -1,3 +1,5 @@
+const { appendFileSync } = require("fs");
+
 const vercelApiToken = process.env.VERCEL_API_TOKEN;
 const projectId = process.env.VERCEL_PROJECT_ID;
 const branch = process.env.BRANCH_NAME;
@@ -35,7 +37,7 @@ const waitForDeploymentState = async (projectId, branch, apiToken, expectedState
 async function main() {
   const deployment = await waitForDeploymentState(projectId, branch, vercelApiToken, 'READY')
   console.log(`Latest Deployment ID: ${deployment.uid}`);
-  fs.appendFileSync(path, `BASE_URL=${deployment.uid}\n`);
+  appendFileSync(path, `BASE_URL=${deployment.uid}\n`);
 }
 
 main();

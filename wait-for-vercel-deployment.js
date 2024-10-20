@@ -1,9 +1,8 @@
-const core = require('@actions/core');
-
 const vercelApiToken = process.env.VERCEL_API_TOKEN;
 const projectId = process.env.VERCEL_PROJECT_ID;
 const branch = process.env.BRANCH_NAME;
 const commitHash = process.env.COMMIT_HASH;
+const githubEnvPath = process.env.GITHUB_ENV;
 
 if (!vercelApiToken || !projectId || !branch || !commitHash) {
   throw Error('Missing required environment variables');
@@ -36,9 +35,7 @@ const waitForDeploymentState = async (projectId, branch, apiToken, expectedState
 async function main() {
   const deployment = await waitForDeploymentState(projectId, branch, vercelApiToken, 'READY')
   console.log(`Latest Deployment ID: ${deployment.uid}`);
-  core.setOutput('deployment_id', deployment.uid);
-  core.setOutput('deployment_state', deployment.state);
-  core.setOutput('deployment_url', deployment.url);
+  fs.appendFileSync(path, `BASE_URL=${deployment.uid}\n`);
 }
 
 main();

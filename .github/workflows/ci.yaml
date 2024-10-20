@@ -74,10 +74,3 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report
-
-      - name: PR comment
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: Playwright E2E Test Report
-          message: |
-            [E2E Test Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})

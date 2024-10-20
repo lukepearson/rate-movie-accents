@@ -38,7 +38,7 @@ async function main() {
   const deployment = await waitForDeploymentState(projectId, branch, vercelApiToken, 'READY')
   console.log(`Latest Deployment ID: ${deployment.uid}`);
   const urlFilePath = './deployment-url.txt';
-  writeFileSync(urlFilePath, deployment.uid);
+  writeFileSync(urlFilePath, deployment.url);
   console.log(`Deployment URL written to ${urlFilePath}`);
 }
 

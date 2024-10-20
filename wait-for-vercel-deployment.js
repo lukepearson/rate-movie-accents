@@ -1,4 +1,4 @@
-const { appendFileSync } = require("fs");
+const { writeFileSync } = require("fs");
 
 const vercelApiToken = process.env.VERCEL_API_TOKEN;
 const projectId = process.env.VERCEL_PROJECT_ID;
@@ -37,7 +37,9 @@ const waitForDeploymentState = async (projectId, branch, apiToken, expectedState
 async function main() {
   const deployment = await waitForDeploymentState(projectId, branch, vercelApiToken, 'READY')
   console.log(`Latest Deployment ID: ${deployment.uid}`);
-  appendFileSync(githubEnvPath, `BASE_URL=${deployment.uid}\n`);
+  const urlFilePath = './deployment-url.txt';
+  writeFileSync(urlFilePath, deployment.uid);
+  console.log(`Deployment URL written to ${urlFilePath}`);
 }
 
 main();

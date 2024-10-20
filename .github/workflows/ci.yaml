@@ -50,6 +50,7 @@ jobs:
           COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
         run: |
           node ./wait-for-vercel-deployment.js
+          echo "VERCEL_DEPLPYMENT_BASE_URL=$(cat deployment-url.txt)" >> "$GITHUB_OUTPUT"
 
       - name: Browser cache
         uses: actions/cache@v4
@@ -66,7 +67,7 @@ jobs:
       - name: E2E tests
         run: yarn test:e2e
         env:
-          BASE_URL: ${{ steps.get_vercel_deployment.outputs.BASE_URL }}
+          BASE_URL: ${{ steps.get_vercel_deployment.outputs.VERCEL_DEPLPYMENT_BASE_URL }}
 
       - name: Upload test report
         uses: actions/upload-artifact@v3

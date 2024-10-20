@@ -47,7 +47,7 @@ jobs:
           VERCEL_API_TOKEN: ${{ secrets.VERCEL_API_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
           BRANCH_NAME: ${{ github.head_ref }}
-          COMMIT_HASH: ${{ github.sha }}
+          COMMIT_HASH: ${{ github.event.pull_request.head.sha }}
         run: |
           node ./wait-for-vercel-deployment.js
 

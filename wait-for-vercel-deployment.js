@@ -37,7 +37,7 @@ const waitForDeploymentState = async (projectId, branch, apiToken, expectedState
 async function main() {
   const deployment = await waitForDeploymentState(projectId, branch, vercelApiToken, 'READY')
   console.log(`Latest Deployment ID: ${deployment.uid}`);
-  appendFileSync(path, `BASE_URL=${deployment.uid}\n`);
+  appendFileSync(githubEnvPath, `BASE_URL=${deployment.uid}\n`);
 }
 
 main();

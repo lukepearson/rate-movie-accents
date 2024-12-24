@@ -9,7 +9,7 @@ const BarChart: React.FC<BarChartProps> = ({ ratings }) => {
   const data = Object.entries(ratings);
   const total = data.map(([k, v]) => v).reduce((acc, value) => acc + value, 0);
   return (
-    <div className="flex justify-between items-end h-64 w-full bg-base-200 p-4 rounded-md shadow-lg">
+    <div className="flex justify-between items-end h-64 w-full bg-base-200 p-4 rounded-md shadow-lg gap-1">
       {data.map(([key, value]) => {
         const percent = (value / total);
         return (

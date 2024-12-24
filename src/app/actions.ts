@@ -1,14 +1,12 @@
 "use server";
 
-import { kv } from "@vercel/kv";
 import { revalidatePath } from "next/cache";
 import { createRating, createRatingId, getIdsFromRatingId, Rating, ratingIdSchema, RatingSchema } from "./models/Rating";
-import { toChatId, ChatSchema, Chat } from "./models/Chat";
+import { ChatSchema, Chat } from "./models/Chat";
 import { urls } from "@/utilities/Urls";
-import { updateRating } from "./store/kv";
+import { updateRating, insertRating, searchForRating, getMessages, insertMessage } from "./store/kv";
 import { getActorById, getFilmById, searchActors, searchActorsByFilmId, searchFilms, searchFilmsByActorId } from "./store/tmdb";
 import { moderateChatMessage, suggestAccents } from "./store/openai";
-
 
 export async function submitNewRating(formData: FormData) {
   const actorId = Number(formData.get("actorId"));
@@ -28,11 +26,7 @@ export async function submitNewRating(formData: FormData) {
 
   const newRating = createRating(actor.name, film.title, actorId, filmId, nativeAccent, attemptedAccent, rating, actorImagePath, filmImagePath);
   
-  await kv.hset(newRating.id, newRating);
-  await kv.zadd("items_by_score", {
-    score: Number(newRating.rating),
-    member: newRating.id,
-  });
+  await insertRating(newRating);
 
   const path = urls.rating(actorId, filmId);
   revalidatePath(path);
@@ -70,7 +64,8 @@ export async function searchForActorsByFilm(filmId: number) {
 export async function searchByActorAndFilm(actorId: number, filmId: number): Promise<Rating | null> {
   const key = createRatingId(actorId, filmId);
   console.log('Searching for', key);
-  const rating = await kv.hgetall(key);
+  
+  const rating = await searchForRating(actorId, filmId);
   if (!rating) {
     console.log('Rating not found for', key);
     return null;
@@ -115,7 +110,7 @@ export async function submitChatMessage(formData: FormData) {
   const [ actorId, filmId ] = getIdsFromRatingId(ratingId);
 
   console.log('New chat message for', ratingId, chatMessage);
-  await kv.rpush(toChatId(ratingId), chatMessage);
+  await insertMessage(ratingId, chatMessage);
   const path = urls.rating(actorId, filmId);
   revalidatePath(path);
 }
@@ -124,8 +119,8 @@ export async function getChatMessages(ratingId: string) {
   if (!ratingId) {
     throw new Error("Missing ratingId");
   }
-  const chatMessages = await kv.lrange(toChatId(ratingId), 0, -1);
-  return chatMessages.map((message) => ChatSchema.parse(message));
+  return getMessages(ratingId);
+  
 }
 
 export async function fetchActorById(actorId: number) {

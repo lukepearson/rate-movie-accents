@@ -3,12 +3,13 @@
 import { fetchAccentsByActorAndFilm, fetchActorById, fetchFilmById, submitNewRating } from "@/app/actions";
 import { FC, useEffect, useState } from "react";
 import UpArrow from '@heroicons/react/24/outline/ArrowUpCircleIcon';
-import WarningIcon from '@heroicons/react/24/outline/ExclamationCircleIcon';
+import WarningIcon from '@heroicons/react/24/outline/MagnifyingGlassIcon';
 import { RatingHearts } from "./RatingHearts";
 import useLocalStorageState from "use-local-storage-state";
 import { createRatingId } from "@/app/models/Rating";
 import { MovieDetails, PersonDetails } from "tmdb-ts";
 import Loading from "@/app/loading";
+import Image from "next/image";
 
 interface CreateNewRatingProps {
   actorId: string;
@@ -70,12 +71,26 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-        <div className="p-8 my-5 mb-9 bg-gray-800 border-2 border-primary rounded-md flex flex-col items-center justify-center leading-loose">
-          <p><WarningIcon className="h-10 w-10 text-primary mb-8" /></p>
-          <p>There are no ratings yet for&nbsp;</p>
-          <p className="text-primary mx-1">{actor?.name}</p>
-          <p className="">&nbsp;in the film&nbsp;</p>
-          <p className="text-secondary mx-1">{film?.title}</p>
+        <div className="p-8 my-5 mb-9 border-2 border-primary rounded-md"
+          style={{ backgroundImage: `url(https://media.themoviedb.org/t/p/w220_and_h330_face/${film?.backdrop_path})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+            backfaceVisibility: 'hidden',
+            backdropFilter: 'blur(20px)',
+            // backgroundBlendMode: 'luminosity',
+          }}>
+          <div className="bg-black/70 p-5 flex flex-col items-center justify-center leading-loose">
+            <Image alt={actor?.name ?? 'Actor'} 
+              width={100} height={100}
+              className="mb-2 rounded-full border-2 border-primary"
+              src={`https://media.themoviedb.org/t/p/w220_and_h330_face${actor?.profile_path}`}
+            />
+            <p>There are no ratings yet for&nbsp;</p>
+            <p className="text-primary mx-1">{actor?.name}</p>
+            <p className="">&nbsp;in the film&nbsp;</p>
+            <p className="text-secondary mx-1">{film?.title}</p>
+          </div>
         </div>
 
       <h2 className="text-center text-white mb-4 text-xl">Submit a new rating:</h2>
@@ -137,7 +152,7 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
         <button
           disabled={isInvalid}
           type="submit"
-          className="btn btn-primary text-white p-3 px-5 focus:cursor-auto disabled:bg-ghost"
+          className="btn btn-primary text-lg bg-primary text-white p-3 px-5 focus:cursor-auto disabled:bg-ghost"
         >
           Submit
         </button>

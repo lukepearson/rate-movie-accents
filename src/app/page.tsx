@@ -1,38 +1,13 @@
-import { kv } from "@vercel/kv";
 import RatingsForm from "./form";
-import { Rating } from "./models/Rating";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { RatingRenderer } from "@/components/RatingRenderer";
-import { voteOnExistingRating } from "./actions";
 import { RatingsList } from "@/components/RatingsList";
+import { getRatings } from "./store/kv";
 
 export const metadata: Metadata = {
   title: "Rate film accents",
   description: "Find out what people think about film accents",
 };
-
-async function getRatings(): Promise<Rating[]> {
-  try {
-    const itemIds = await kv.zrange<Array<string>>("items_by_score", 0, 100, {
-      rev: true,
-    });
-
-    if (!itemIds.length) {
-      return [];
-    }
-
-    const multi = kv.multi();
-    itemIds.forEach((id) => {
-      multi.hgetall(id);
-    });
-
-    return multi.exec();
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-}
 
 export default async function Page() {
   const ratings = await getRatings();
@@ -51,9 +26,11 @@ export default async function Page() {
     <div className="flex flex-wrap items-center justify-around max-w-4xl my-8 sm:w-full h-full">
       <div className="items-center justify-center flex flex-col">
         <RatingsForm />
-        <div>
-          <h2>Popular accents</h2>
-        </div>
+        {sortedRatings?.length ? (
+          <div>
+              <h2>Popular accents</h2>
+          </div>
+        ) : null}
         <RatingsList ratings={sortedRatings} />
       </div>
     </div>

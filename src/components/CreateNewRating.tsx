@@ -69,6 +69,8 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
     );
   }
 
+  console.log({ rating });
+
   return (
     <div className="flex flex-col items-center justify-center">
         <div className="p-8 my-5 mb-9 border-2 border-primary rounded-md"
@@ -146,6 +148,7 @@ const CreateNewRating: FC<CreateNewRatingProps> = ({ actorId, filmId }) => {
         </datalist>
       
         <RatingHearts rating={rating} onRatingChange={(newRating: number) => {
+          console.log('CreateNewRating.onRatingChange', newRating);
           setRating(newRating);
         }} />
         

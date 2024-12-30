@@ -18,11 +18,22 @@ const RatingHeart: FC<RatingHeartProps> = ({ rating, hoverRating, onChange, onMo
   const activeRating = hoverRating ?? rating;
   const isActive = Boolean(activeRating >= value);
   const isHalfActive = Boolean(activeRating >= value - 0.5);
+  console.log({
+    activeRating,
+    hoverRating,
+    rating,
+    isActive,
+    isHalfActive,
+  });
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
   };
   const handleClick: MouseEventHandler<HTMLInputElement> = (event) => {
+    console.log('clique', {
+      isDisabled,
+      value: event.currentTarget.value,
+    });
     if (isDisabled) return;
     onChange(Number(event.currentTarget.value));
     event.stopPropagation();

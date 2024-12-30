@@ -1,7 +1,7 @@
 "use client";
 
 import { getIdsFromRatingId, Rating } from "@/app/models/Rating";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { RatingHearts } from "./RatingHearts";
 import useLocalStorageState from "use-local-storage-state";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,7 @@ import BarChart from "./BarChart";
 import clsx from "clsx";
 import Loading from "@/app/loading";
 import { preventBubbles } from "@/utilities/Handlers";
+import { motion, AnimatePresence } from "framer-motion";
 
 
 interface RatingProps {
@@ -24,9 +25,11 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading, 
   const [votedIds, setVoteIds] = useLocalStorageState<Array<string>>("hasAlreadyVoted", {
     defaultValue: [],
   });
+  const [isOpen, setIsOpen] = useState(false);
   const hasAlreadyVoted = votedIds.includes(rating.id);
 
   const handleChange = (newRating: number) => {
+    console.log('RatingRenderer.handleChange', { hasAlreadyVoted, ratingId: rating.id, votedIds });
     if (hasAlreadyVoted) return;
     setVoteIds([...votedIds, rating.id]);
     onChange({
@@ -81,28 +84,43 @@ const RatingRenderer: FC<RatingProps> = ({ rating, onChange, isLink, isLoading, 
         </div>
       </div>
 
+      
       {showStats && (
-        <details className='collapse bg-gray-900 rounded-none'>
-          <summary {...preventBubbles()} className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Stats</summary>
-          <div className="collapse-content">
-            <div className="flex flex-col justify-between mt-4">
-              Ratings distribution
-              <BarChart ratings={rating.ratings} />
-            </div>
-
-            <div className="stats shadow mt-4">
-              <div className="stat">
-                <div className="stat-title text-gray-500">Votes</div>
-                <div className="stat-value text-white">{rating.votes ?? 0}</div>
+        
+        <div className='bg-gray-900 rounded-none'>
+          <button {...preventBubbles()} onClick={() => setIsOpen(!isOpen)} className="text-xl w-full font-medium hover:bg-gray-800 p-4">Stats</button>
+          <AnimatePresence>
+            {isOpen ? (
+            <motion.div
+              key="stats"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+            <div>
+              <div className="flex flex-col justify-between mt-4">
+                Ratings distribution
+                <BarChart ratings={rating.ratings} />
               </div>
 
-              <div className="stat">
-                <div className="stat-title text-gray-500">Average Rating</div>
-                <div className="stat-value text-white">{Number(rating.rating).toFixed(2) ?? 0}</div>
+              <div className="stats shadow mt-4">
+                <div className="stat">
+                  <div className="stat-title text-gray-500">Votes</div>
+                  <div className="stat-value text-white">{rating.votes ?? 0}</div>
+                </div>
+
+                <div className="stat">
+                  <div className="stat-title text-gray-500">Average Rating</div>
+                  <div className="stat-value text-white">{Number(rating.rating).toFixed(2) ?? 0}</div>
+                </div>
               </div>
             </div>
-          </div>
-        </details>
+            </motion.div>
+            ) : null}
+          </AnimatePresence>
+        </div>
       )}
 
       {isLoading && (

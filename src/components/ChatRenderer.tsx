@@ -5,17 +5,19 @@ import { Rating } from "@/app/models/Rating";
 import { FC, useRef, useState } from "react";
 import { ChatItem } from "./ChatItem";
 import Loading from "@/app/loading";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface ChatRendererProps {
   chat: Array<Chat>;
   rating: Rating;
-  submitChatMessage: (formData: FormData) => void;
+  submitChatMessage: (formData: FormData) => Promise<void>;
 }
 
 const ChatRenderer: FC<ChatRendererProps> = ({ chat, rating, submitChatMessage }) => {
   const chatRef = useRef<HTMLTextAreaElement>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -24,7 +26,7 @@ const ChatRenderer: FC<ChatRendererProps> = ({ chat, rating, submitChatMessage }
 
     try {
       const formData = new FormData(event.currentTarget);
-      submitChatMessage(formData);
+      await submitChatMessage(formData);
       chatRef.current!.value = "";
     } catch (error: any) {
       console.error(error);
@@ -34,9 +36,19 @@ const ChatRenderer: FC<ChatRendererProps> = ({ chat, rating, submitChatMessage }
   };
 
   return (
-    <details className='collapse bg-gray-900 border-2 border-indigo-500 rounded-md'>
-      <summary className="collapse-title text-xl font-medium hover:bg-gray-800 pe-4">Comments</summary>
-      <div className="collapse-content">
+    <div className='bg-gray-900 border-2 border-indigo-500 rounded-md'>
+      <button onClick={() => setIsOpen(!isOpen)} className="text-xl w-full font-medium hover:bg-gray-800 p-4">Comments</button>
+      <AnimatePresence>
+        {isOpen ? (
+          <motion.div
+              key="stats"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="overflow-hidden"
+            >
+      <div className="max-w-sm">
 
         {isLoading ? <Loading /> : <>
 
@@ -46,14 +58,17 @@ const ChatRenderer: FC<ChatRendererProps> = ({ chat, rating, submitChatMessage }
       </>}
       </div>
 
-      <h2>Add a comment</h2>
+      <h2 className="mt-2">Add a comment</h2>
       <form onSubmit={onSubmit} className="flex flex-col items-center gap-4 p-4">
-        <input required minLength={3} name="author" maxLength={30} className="input input-bordered input-primary w-full max-w-xs placeholder-gray-500" placeholder="Your name" />
-        <textarea required minLength={3} ref={chatRef} maxLength={500} name="message" className="textarea textarea-primary w-full max-w-xs placeholder-gray-500" placeholder="Your comment"></textarea>
+        <input required minLength={3} name="author" maxLength={30} className="input input-bordered input-primary w-full max-w-sm text-sm placeholder-gray-500" placeholder="Your name" />
+        <textarea required minLength={3} ref={chatRef} maxLength={500} name="message" className="textarea textarea-primary w-full max-w-sm text-sm placeholder-gray-500" placeholder="Your comment"></textarea>
         <input hidden name="ratingId" value={rating.id} onChange={() => {}} />
-        <button className="btn btn-primary">Post</button>
+        <button className="btn btn-primary w-full max-w-sm">Post</button>
       </form>
-    </details>
+      </motion.div>
+      ) : null}
+      </AnimatePresence>
+    </div>
   );
 };
 
